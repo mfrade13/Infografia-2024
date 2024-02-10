@@ -10,7 +10,7 @@ local CH = display.contentHeight
 print(CW, CH)
 
 local ancho_pixel = CW/21
-local alto_pixel = CH/18
+local alto_pixel = CH/19
 local lineaV
 
 local fondo = display.newRect(CW/2, CH/2, CW,CH)
@@ -28,6 +28,7 @@ local color_negro = {0,0,0}
 local color_blanco = {1,1,1}
 local color_rojo = {1,0,0}
 local color_amarillo = {1,1,0}
+local color_naranja = {0.83,0.5,0.15}
 print( unpack( color_negro ))
 
 -- fuego rojo
@@ -39,6 +40,29 @@ local fuego_rojo = {
 local parte_amarilla = {
     {7,12,4,4}, --pecho
     {18,6,2,3}
+}
+
+local parte_naranja = {
+	{18,6,1,1},
+	{19,5,1,1}
+}
+
+local parte_naranja_2 = {
+	{4,2,6,9},
+	{2,5,10,5},
+	{11,9,3,10},
+	{11,11,6,4},
+	{10,9,1,5},
+	{9,11,1,2},
+	{8,11,1,1},
+	{17,9,2,4}
+
+}
+local puntos_blancos = {
+	{5,5,1,1},
+	{6,14,1,1},
+	{11,17,1,1},
+	{13,17,1,1}
 }
 
 -- contornos
@@ -67,7 +91,22 @@ local contornos = {
 	{19,8,1,3},
 	{18,11,1,2},
 	{17,13,1,1},
-	{16,14,1,1}
+	{16,14,1,1},
+	{14,15,1,3},
+	{11,18,3,1},
+	{10,17,1,1},
+	{9,16,3,1},
+	{6,15,3,1},
+	{7,14,1,1},
+	{5,14,1,1},
+	{5,11,3,1},   -- T
+	{6,12,1,2},
+	{2,9,1,1},
+	{3,10,2,1},
+	{10,11,1,1},
+	{11,10,1,1},
+	{11,12,2,1}
+
 }
 function dibujar_contornos( x1,y1,ancho,alto, color  )
 	local contorno = display.newRect((x1-1) *ancho_pixel , (y1-1) *alto_pixel, ancho *ancho_pixel, alto*alto_pixel)
@@ -109,13 +148,31 @@ for i,v in ipairs( parte_amarilla) do
 	dibujar_contornos( v[1],v[2],v[3],v[4], color_amarillo )
 end
 
+
+for i,v in ipairs( parte_naranja_2) do
+	dibujar_contornos( v[1],v[2],v[3],v[4], color_naranja )
+end
+
+
+
+for i,v in ipairs( parte_naranja) do
+	dibujar_contornos( v[1],v[2],v[3],v[4], color_naranja )
+end
+
 --DIBUJAR CONTORNOS
 for i,v in ipairs( contornos) do
 	print(i, unpack(v))
 	dibujar_contornos( v[1],v[2],v[3],v[4], color_negro )
 end
 
-dibujar_contornos(5,4,2,3, color_negro)
-dibujar_contornos(5,4,1,1, color_blanco )
+dibujar_contornos(5,5,2,3, color_negro) -- ojo podria ir a contornos
+
+
+for i,v in ipairs( puntos_blancos) do
+	dibujar_contornos( v[1],v[2],v[3],v[4], color_blanco )
+end
+
+
+--dibujar_contornos(5,5,1,1, color_blanco ) -- pupila que fue el gruplo blanco
 
 
