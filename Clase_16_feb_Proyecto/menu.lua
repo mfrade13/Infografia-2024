@@ -4,6 +4,7 @@ local scene = composer.newScene()
  
 
  local fondo, boton_play
+ local vidas = 3
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -15,7 +16,10 @@ local scene = composer.newScene()
         local options =
         {
             effect = "zoomInOut",
-            time = 500
+            time = 500,
+            params = {
+                dificultad = 20
+            }
         }
         composer.gotoScene( "juego" , options )
     end
@@ -39,7 +43,7 @@ function scene:create( event )
     boton_play = display.newImageRect(sceneGroup, carpeta_recursos.."play.png", 100, 100)
     boton_play.x = CW/2; boton_play.y = CH/2
 
-
+ 
 end
  
  
