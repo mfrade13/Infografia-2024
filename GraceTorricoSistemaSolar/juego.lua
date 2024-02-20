@@ -1,0 +1,409 @@
+local composer = require( "composer" )
+ 
+local scene = composer.newScene()
+ 
+-- -----------------------------------------------------------------------------------
+-- Code outside of the scene event functions below will only be executed ONCE unless
+-- the scene is removed entirely (not recycled) via "composer.removeScene()"
+-- -----------------------------------------------------------------------------------
+ 
+ 
+local mainpath = "resources/"
+local CW = display.contentWidth
+local CH = display.contentHeight
+local fondo, play, stop
+local sol
+local isPlaying = false
+local mainOrbits = {}
+local mainMoons = {}
+local showingMoons = false
+local orbits = {}
+local orbit
+local planetsButtonGroup
+local planets
+-- -----------------------------------------------------------------------------------
+-- Scene event functions
+-- -----------------------------------------------------------------------------------
+ 
+ function setMainScenario()
+    fondo = display.newImageRect(mainpath.."bckg.jpg",CW,CH)
+    fondo.anchorX=0; fondo.anchorY=0
+    fondo.alpha=1
+    planets = {"mercurio", "venus", "tierra", "marte", "jupiter", "saturno", "urano", "neptuno"}
+    play = display.newImageRect(mainpath.."play.png", 60, 60)
+    play.x = 50; play.y = 720
+    play:addEventListener("touch", pressPlay)
+    stop = display.newImageRect(mainpath.."stop.png", 60, 60)
+    stop.x = 120; stop.y = 720
+    stop:addEventListener("touch", pressStop)
+    createButtons()
+    createAuxiliaryButtons()
+    createPlanets()
+    local s = 20
+    mainOrbits = {
+        mercurio = {a = 330, b = 100 - s, theta = math.pi / 4, center = sol},
+        venus = {a = 380, b = 200 - s, theta = math.pi + 30, center = sol},
+        tierra = {a = 390, b = 250 - s, theta = math.pi / 3, center = sol},
+        marte = {a = 500, b = 275 - s, theta = math.pi / 4, center = sol},
+        jupiter = {a = 370, b = 200 - s, theta = math.pi * 2, center = sol},
+        saturno = {a = 270, b = 70 - s, theta = math.pi / 2, center = sol},
+        urano = {a = 400, b = 250 - s, theta = math.pi + 240, center = sol},
+        neptuno = {a = 450, b = 250 - s, theta = math.pi + 50, center = sol}
+    }
+    
+    createOrbits()
+    createMoons()
+end
+
+function createButtons()
+    planetsButtonGroup = display.newGroup()
+
+    local btnWidth = 80
+    local btnHeight = 40
+    local startX = play.x + 170
+    local gapX = 100
+
+    for i, planet in ipairs(planets) do
+        local btn = display.newImageRect(mainpath.."button_"..planet..".png", btnWidth, btnHeight)
+        btn.x = play.x
+        btn.y=play.y
+        btn.initX = startX + (i - 1) * gapX
+        btn.initY =play.y
+        btn.isVisible = false
+        planetsButtonGroup:insert(btn)
+        btn:addEventListener("touch", function(event)
+            if event.phase == "ended" then
+                print("Botón de " .. planet .. " presionado")
+            end
+        end)
+    end
+end
+
+function createAuxiliaryButtons()
+    local btnWidth = 30
+    local btnHeight = 30
+    local startY = 720
+    local gapX = 100
+
+    for i, planet in ipairs(planets) do
+        local btnShowHide = display.newImageRect(mainpath.."play.png", btnWidth, btnHeight)
+        btnShowHide.x = play.x + 150 + (i - 1) * gapX
+        btnShowHide.y = startY - 40
+        btnShowHide.isVisible = false
+        planetsButtonGroup:insert(btnShowHide)
+
+        btnShowHide:addEventListener("touch", function(event)
+            if event.phase == "ended" then
+                togglePlanetVisibility(planet)
+            end
+        end)
+    end
+end
+
+
+function togglePlanetVisibility(planet)
+    local planetObject = _G[planet]
+    local orbitP = orbits[planet]
+
+    if planetObject then
+        planetObject.isVisible = not planetObject.isVisible
+    end
+
+    hidePlanetMoons(planet)
+
+    if orbitP then
+        orbitP.isVisible = not orbitP.isVisible
+    end
+end
+
+function showPlanetsButtons()
+    for i = 1, planetsButtonGroup.numChildren do
+        local btn = planetsButtonGroup[i]
+        transition.to(btn, {x = btn.initX, y = btn.initY, time = 2000})
+        btn.isVisible = true
+    end
+end
+
+local function movePlanetsButtonsToCenter()
+    for i = 1, planetsButtonGroup.numChildren do
+        local btn = planetsButtonGroup[i]
+        transition.to(btn, {x = play.x, y = play.y, time = 2000})
+    end
+    timer.performWithDelay(2000, function()
+        for i = 1, planetsButtonGroup.numChildren do
+            planetsButtonGroup[i].isVisible = false
+        end
+    end)
+end
+
+function pressPlay()
+    if not isPlaying then
+        Runtime:addEventListener("enterFrame", rotate)
+        bigBang()
+        isPlaying = true 
+        showPlanetsButtons()
+    end
+end
+
+function createPlanets()
+    sol = display.newImageRect(mainpath.."Sol1.png", 200, 200)
+    mercurio = display.newImageRect(mainpath.."Mercurio.png", 70, 70)
+    venus = display.newImageRect(mainpath.."Venus.png", 70, 70)
+    tierra = display.newImageRect(mainpath.."Tierra.png", 70, 70)
+    marte = display.newImageRect(mainpath.."Marte.png", 70, 70)
+    jupiter = display.newImageRect(mainpath.."Jupiter.png", 70, 70)
+    saturno = display.newImageRect(mainpath.."Saturno.png", 130, 70)
+    urano = display.newImageRect(mainpath.."Urano.png", 70, 70)
+    neptuno = display.newImageRect(mainpath.."Neptuno.png", 70, 70)
+end
+
+function placePlanets()
+    transition.to(sol, { x=CW/2, y=60, time=2000 })
+    transition.to(mercurio, { x=250, y=100, time=2000 })
+    transition.to(venus, { x=850, y=100, time=2000 })
+    transition.to(tierra, { x=250, y=100, time=2000 })
+    transition.to(marte, { x=850, y=100, time=2000 })
+    transition.to(jupiter, { x=250, y=100, time=2000 })
+    transition.to(saturno, { x=850, y=100, time=2000 })
+    transition.to(urano, { x=250, y=100, time=2000 })
+    transition.to(neptuno, { x=840, y=100, time=2000 })
+end
+
+function bigBang()
+    transition.to(sol, {x= CW/2, y=CH/2-50, time=2000})
+    transition.to(mercurio, {x=CW/2 + 250 * math.cos(math.pi / 4 ), y=CH/2 - 100 * math.sin(math.pi/4), time=2000})
+    transition.to(venus, {x= 700, y=300, time=2000})
+    transition.to(tierra, {x= 340, y=550, time=2000})
+    transition.to(marte, {x= 400, y=100, time=2000})
+    transition.to(jupiter, {x= 100, y=570, time=2000})
+    transition.to(saturno, {x= 340, y=700, time=2000})
+    transition.to(urano, {x=670, y=500, time=2000})
+    transition.to(neptuno, {x=800, y=630, time=2000, onComplete=start})
+end
+
+function addMoon(planet)
+    local moon = display.newImageRect(mainpath.."Luna.png", 20, 20)
+    moon.planet = planet  
+    local planetObject = _G[planet]
+    if planetObject then
+        moon.x = planetObject.x + 30  
+        moon.y = planetObject.y - 30 
+        moon.theta = math.random()
+        if not mainMoons[planet] then
+            mainMoons[planet] = {}  
+        end
+        table.insert(mainMoons[planet], moon)  
+    end
+end
+
+function createMoons()
+
+    for planet, _ in pairs(mainOrbits) do
+        addMoon(planet)
+    end
+end
+
+function moveMoon(planet)
+    local planetObject = _G[planet]
+    local moons = mainMoons[planet]
+    if moons and planetObject then
+        local t = system.getTimer() * 0.003
+        for _, moon in ipairs(moons) do 
+            if moon.isVisible then  
+                local x = planetObject.x + 70 * math.cos(moon.theta + t)
+                local y = planetObject.y - 30 * math.sin(moon.theta + t)
+                moon.x = x ; moon.y = y
+                t = t + 0.1
+            end
+        end
+    end
+end
+
+
+function movePlanet(planet)
+    local orbit = orbits[planet]
+    local t = system.getTimer() * 0.001
+    local x = orbit.center.x + orbit.a * math.cos(orbit.theta + t)
+    local y = orbit.center.y - orbit.b * math.sin(orbit.theta + t)
+    local planetObject = _G[planet]
+
+    if planetObject then    
+        planetObject.x = x 
+        planetObject.y = y
+        planetObject:toFront()
+    end
+end
+
+function createOrbit(a, b, theta, center)
+    orbit = display.newLine(0, 0, 0, 0)
+    orbit:setStrokeColor(math.random(), math.random(), math.random())
+    orbit.strokeWidth = 4
+    orbit.a = a
+    orbit.b = b
+    orbit.theta = theta
+    orbit.center = center
+    return orbit
+end
+
+function createOrbits()
+    for planet, data in pairs(mainOrbits) do
+        orbits[planet] = createOrbit(data.a, data.b, data.theta, data.center)
+    end
+end
+
+function updateOrbits()
+    for _, orbit in pairs(orbits) do
+        local t = system.getTimer() * 0.001
+        local x = orbit.center.x + orbit.a * math.cos(orbit.theta + t) 
+        local y = orbit.center.y - orbit.b * math.sin(orbit.theta + t) 
+        orbit:append(x, y)
+    end
+end
+
+function move(e)
+    showingMoons = true
+    moonVisibility()
+    for planet, _ in pairs(mainOrbits) do
+        movePlanet(planet)
+        moveMoon(planet)
+    end
+    print(e.time)
+end
+
+function rotate()
+    sol.rotation = sol.rotation+1
+    mercurio.rotation = mercurio.rotation-1
+    venus.rotation = venus.rotation+1
+    tierra.rotation = tierra.rotation-1
+    marte.rotation = marte.rotation+1
+    jupiter.rotation = jupiter.rotation-1
+    saturno.rotation = saturno.rotation+1
+    urano.rotation = urano.rotation-1
+    neptuno.rotation = neptuno.rotation+1
+end
+
+function removeMoonsFromPlanet(planet)
+    if mainMoons[planet] then
+        for i = #mainMoons[planet], 1, -1 do
+            mainMoons[planet][i]:removeSelf()
+            table.remove(mainMoons[planet], i)
+        end
+    end
+end
+
+function hidePlanetMoons(planet)
+    if mainMoons[planet] then
+        for i = #mainMoons[planet], 1, -1 do
+            mainMoons[planet][i].isVisible = false
+        end
+    end
+end
+
+function removeAllMoons()
+    for planet, moons in pairs(mainMoons) do
+        for i = #moons, 1, -1 do
+            moons[i]:removeSelf()
+            table.remove(moons, i)
+        end
+    end
+end
+
+function moonVisibility()
+    for _, moons in pairs(mainMoons) do
+        for _, moon in ipairs(moons) do
+            moon.isVisible = showingMoons
+        end
+    end
+end
+
+
+function start()
+    createOrbits()
+    Runtime:addEventListener("enterFrame", updateOrbits)
+    Runtime:addEventListener("enterFrame", move)
+    sol:toFront()
+end
+
+function pressStop(event)
+    if move then
+        Runtime:removeEventListener("enterFrame", move)
+        Runtime:removeEventListener("enterFrame", rotate)
+        Runtime:removeEventListener("enterFrame", updateOrbits)
+        sol:toFront()
+
+        for _, orbit in pairs(orbits) do
+            orbit:removeSelf()
+        end
+        orbits = {}
+        showingMoons = false
+        moonVisibility()
+    end
+    transition.cancel()
+    placePlanets()
+    movePlanetsButtonsToCenter()
+    isPlaying = false
+
+end
+
+-- create()
+function scene:create( event )
+    setMainScenario()
+    placePlanets()
+end
+ 
+ 
+-- show()
+function scene:show( event )
+ 
+    local sceneGroup = self.view
+    local phase = event.phase
+ 
+    if ( phase == "will" ) then
+        -- Code here runs when the scene is still off screen (but is about to come on screen)
+ 
+    elseif ( phase == "did" ) then
+        -- Code here runs when the scene is entirely on screen
+        --local f1 = crear_frutas()
+        --sceneGroup.insert(f1)
+        --for  i = 1, dificultad, 1 do
+          --  crear_frutas(sceneGroup)
+        --end
+    end
+end
+ 
+ 
+-- hide()
+function scene:hide( event )
+ 
+    local sceneGroup = self.view
+    local phase = event.phase
+ 
+    if ( phase == "will" ) then
+        -- Code here runs when the scene is on screen (but is about to go off screen)
+ 
+    elseif ( phase == "did" ) then
+        -- Code here runs immediately after the scene goes entirely off screen
+ 
+    end
+end
+ 
+ 
+-- destroy()
+function scene:destroy( event )
+ 
+    local sceneGroup = self.view
+    -- Code here runs prior to the removal of scene's view
+ 
+end
+ 
+ 
+-- -----------------------------------------------------------------------------------
+-- Scene event function listeners
+-- -----------------------------------------------------------------------------------
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+-- -----------------------------------------------------------------------------------
+ 
+return scene
