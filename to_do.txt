@@ -1,0 +1,25 @@
+------------------
+-- TO DO
+-----------------
+
+* score
+    incrementar score
+    mostrar score
+* controlar cuando una fruta se cae
+* vidas
+* bombas 
+* gameover scene
+* trayectoria parabólica
+    - no se deben salir de la pantalla en el eje x
+* remove fruits
+
+
+-----------------
+-- OPCIONALES
+-----------------
+
+* splash Screen
+* frutas rotas
+* highest score
+* previous score
+* sonidos
