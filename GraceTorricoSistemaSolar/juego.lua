@@ -1,5 +1,5 @@
 local composer = require( "composer" )
- 
+local widget = require("widget")
 local scene = composer.newScene()
  
 -- -----------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ local scene = composer.newScene()
 local mainpath = "resources/"
 local CW = display.contentWidth
 local CH = display.contentHeight
-local fondo, play, stop
+local fondo, play, stop, asteroid
 local sol
 local isPlaying = false
 local mainOrbits = {}
@@ -40,6 +40,10 @@ local velocity
     stop = display.newImageRect(mainpath.."stop.png", 60, 60)
     stop.x = 120; stop.y = 720
     stop:addEventListener("touch", pressStop)
+    asteroid = display.newImageRect(mainpath.."Asteroid.png", 60, 80)
+    asteroid.rotation = 45
+    asteroid.x = CW - 40; asteroid.y = 500
+    asteroid:addEventListener("touch", pressAsteroid)
     createButtons()
     createAuxiliaryButtons()
     createPlanets()
@@ -189,7 +193,6 @@ function movePlanetsButtonsToCenter()
 end
 
 function toggleAuxiliaryButtonsVisibility(visible)
-        print("Changing moonVisibility to " .. tostring(visible))
     for _, planet in ipairs(planets) do
         local planetButtonSet = planetsAuxButtons[planet]
         for _, auxBtn in ipairs(planetButtonSet) do
@@ -408,13 +411,57 @@ function pressStop(event)
     toggleAuxiliaryButtonsVisibility(false)
 end
 
+function pressAsteroid(event)
+    if event.phase == "ended" then
+        local image = display.newImageRect(mainpath .. "Asteroid.png", 60, 80)
+        image.x = CW; image.y = CH
+        transition.to(image, {x = CW/2, y = CH/2, time = 1000})
+        transition.to(image, {xScale = 3, yScale = 3, time = 1000, onComplete = function()
+            transition.to(image, {xScale = 16, yScale = 16, time = 2000})
+            transition.to(image, {x = CW/2, y= CH/2, time = 2000, onComplete = function() 
+            image:removeSelf()
+            timer.performWithDelay(1000, placePlanets)
+            end})
+        end})
+        timer.performWithDelay(1000, dropPlanets)
+    end
+end
+
+function dropPlanets()
+    transition.to(marte, {y= CH, time = 2000})
+        transition.to(jupiter, {y= CH + 30, time = 2000})
+        transition.to(mercurio, {y= CH + 30, time = 2000})
+        transition.to(neptuno, {y= CH + 30, time = 2000})
+        transition.to(saturno, {y= CH + 30, time = 2000})
+        transition.to(tierra, {y= CH + 30, time = 2000})
+        transition.to(urano, {y= CH + 30, time = 2000})
+        transition.to(venus, {y= CH + 30, time = 2000})
+        transition.to(sol, {y= CH + 50, time = 2000})
+end
+function sliderListener(event)
+    local value = event.value
+    velocity = value / 10000
+end
+
+function createSlider()
+    local slider = widget.newSlider({
+        orientation = "vertical",  
+        left = 20,                
+        top = CH - 300,  
+        height = 200,              
+        minValue = 0.0001, 
+        maxValue = 0.01,
+        listener = sliderListener
+    })
+end
+
 -- create()
 function scene:create( event )
     setMainScenario()
     placePlanets()
+    createSlider()
 end
- 
- 
+
 -- show()
 function scene:show( event )
  
