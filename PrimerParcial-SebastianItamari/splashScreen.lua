@@ -12,27 +12,20 @@ recursosAudio = "Audios/"
 --SONIDOS GLOBALES
 sonidoClick = audio.loadSound(recursosAudio.."click.wav")
 sonidoCometa = audio.loadSound(recursosAudio.."cometa.mp3")
---SONIDOS LOCALES
-local sonidoFondo = audio.loadStream(recursosAudio.."fondo.mp3")
+sonidoFondo = audio.loadStream(recursosAudio.."fondo.mp3")
 --sonidoExplosion = audio.loadSound(recursosAudio.."explosion.mp3")
 
 --DIMENSIONES GENERALES DE LA PANTALLA DEL DISPOSITIVO
 CW = display.contentWidth
 CH = display.contentHeight
 
-
+--VARIABLES DE LA ESCENA
 local fondo, icono, mensajeCarga, titulo, boton, textoBoton
 local indiceCarga = 0
-
-
-
-local options = {
-    effect = "slideLeft",
-    time = 2200,
-    --time = 500
-}
+local tempTimer
 
 function ir_animacion(event)
+    local options = {effect = "slideLeft",time = 2200}
     composer.gotoScene("animacion",options)
 end
 
@@ -55,30 +48,22 @@ function cargar(self,event)
         boton.isVisible = false
         icono.isVisible = true
         mensajeCarga.isVisible = true
-        
-        local tempTimer = timer.performWithDelay(200, cambiarTextoCarga, 0)
-        
+
+        tempTimer = timer.performWithDelay(200, cambiarTextoCarga, 0)
+
         transition.to(titulo,{y = CH/2 + 50, time = 100}) 
-        transition.to(icono, {rotation = 360,time = 2700,
-        onComplete = function() ir_animacion()
-                if tempTimer then
-                    timer.cancel(tempTimer)
-                end
-            end
-        })
-        --transition.to(icono,{rotation=360,time=500,onComplete=ir_animacion})       
+        transition.to(icono, {rotation = 360,time = 2700, onComplete = ir_animacion})   
     end
     return true
 end
 
--- create()
+-- CREATE()
 function scene:create( event )
     local sceneGroup = self.view
 
     fondo = display.newImageRect(sceneGroup,recursosImagenes .. "inicio.png",CW*1.3,CH)
     fondo.x = CW; fondo.y = CH
     fondo.anchorX = 1; fondo.anchorY = 1
-
     titulo = display.newText(sceneGroup, "Sistema Solar", CW / 2, CH / 2, recursosTexto.."Opcion3.ttf", 45)
 
     boton = display.newRoundedRect(sceneGroup, CW/2, CH/2 + 85, 280, 80, 30)
@@ -88,14 +73,13 @@ function scene:create( event )
     textoBoton = display.newText(sceneGroup, "INICIAR", boton.x, boton.y, recursosTexto.."Opcion2.ttf", 32)
     textoBoton:setFillColor(1)
     
-    
     icono = display.newImageRect(sceneGroup,recursosImagenes .. "icono.png",160,160)
     icono.x = CW/2; icono.y = CH/2 - 80
-    
     mensajeCarga = display.newText(sceneGroup, "Cargando", CW / 2, CH / 2 + 120, recursosTexto.."Opcion1.ttf", 50)
+    audio.play(sonidoFondo, { loops = -1 }) 
 end
 
--- show()
+-- SHOW()
 function scene:show( event )
     local sceneGroup = self.view
     local phase = event.phase
@@ -108,17 +92,18 @@ function scene:show( event )
         textoBoton.isVisible = true
         boton.isVisible = true
     elseif ( phase == "did" ) then
-        audio.play(sonidoFondo, { loops = -1 }) 
         boton.touch = cargar
         boton: addEventListener('touch',boton)   
     end
 end
 
+-- HIDE()
 function scene:hide( event )
  
     local sceneGroup = self.view
     local phase = event.phase
     if ( phase == "will" ) then
+        timer.cancel(tempTimer)
         boton: removeEventListener('touch',boton)
     elseif ( phase == "did" ) then
         
