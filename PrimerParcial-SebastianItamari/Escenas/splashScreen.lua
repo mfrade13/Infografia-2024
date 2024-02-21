@@ -13,7 +13,8 @@ recursosAudio = "Audios/"
 sonidoClick = audio.loadSound(recursosAudio.."click.wav")
 sonidoCometa = audio.loadSound(recursosAudio.."cometa.mp3")
 sonidoFondo = audio.loadStream(recursosAudio.."fondo.mp3")
---sonidoExplosion = audio.loadSound(recursosAudio.."explosion.mp3")
+sonidoExplosion = audio.loadSound(recursosAudio.."explosion.mp3")
+sonidoSuccion = audio.loadSound(recursosAudio.."succion.mp3")
 
 --DIMENSIONES GENERALES DE LA PANTALLA DEL DISPOSITIVO
 CW = display.contentWidth
@@ -26,7 +27,7 @@ local tempTimer
 
 function ir_animacion(event)
     local options = {effect = "slideLeft",time = 2200}
-    composer.gotoScene("animacion",options)
+    composer.gotoScene("Escenas.animacion",options)
 end
 
 function cambiarTextoCarga()

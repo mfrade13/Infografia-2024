@@ -54,7 +54,7 @@ local textosBotones = {"Iniciar","Cometa","Mercurio","Venus","Tierra","Marte","J
 --FUNCIONES
 function ir_inicio(event)
     local options = {effect = "slideRight", time = 2200}
-    composer.gotoScene("splashScreen",options)
+    composer.gotoScene("Escenas.splashScreen",options)
 end
 
 function salir(self,event)
@@ -243,7 +243,7 @@ end
 function bigBang()
     local elemento --GRUPO DE CUERPOS ACORDE A UN PLANETA (EL PLANETA EN SI Y SUS LUNAS)
     local cuerpo --PLANETA O LUNA (ELEMENTO) DEL GRUPO DE CUERPOS
-    --audio.play(sonidoExplosion)
+    audio.play(sonidoExplosion)
     local funcionOnComplete = nil
             for i = 2, grupoAstros.numChildren  do
                 elemento = grupoAstros[i][2]
@@ -265,6 +265,7 @@ function bigBang()
 end
 
 function agujeroNegro()
+    audio.play(sonidoSuccion)
     local elemento --GRUPO DE CUERPOS ACORDE A UN PLANETA (EL PLANETA EN SI Y SUS LUNAS)
     local cuerpo --PLANETA O LUNA (ELEMENTO) DEL GRUPO DE CUERPOS
     for i = 2, grupoAstros.numChildren  do
@@ -370,7 +371,7 @@ function cometa(self, event)
             local angulo = math.atan2(deltaY, deltaX) * 180 / math.pi
             cometa.rotation = angulo
             transition.to(cometa, {y = destinoY, x = destinoX, time = duracionPrincipal, onComplete = function() cometa:removeSelf() end})
-            crearRastroCometa(cometa,duracionPrincipal)
+            crearRastroCometa(cometa,duracionPrincipal,destinoX,destinoY)
         else 
             desplegarMensaje(grupoEfectos,"Inicia la animación para mostrar los cometas")
         end
@@ -378,7 +379,7 @@ function cometa(self, event)
     return true
 end
 
-function crearRastroCometa(cometa,duracionPrincipal)
+function crearRastroCometa(cometa,duracionPrincipal,destinoX,destinoY)
     local numInstancias = 12  -- Número de instancias del cometa para el rastro    12
     local intervaloTransicion = duracionPrincipal / numInstancias  -- Cada cuanto se hara una transición
     local duracionInstancia = 500  -- Duración del movimiento de cada instancia del rastro 500

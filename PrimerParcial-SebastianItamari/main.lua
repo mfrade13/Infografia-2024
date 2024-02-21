@@ -7,4 +7,4 @@
 -- Your code here
 local composer = require("composer")
 
-composer.gotoScene("splashScreen")
+composer.gotoScene("Escenas.splashScreen")
