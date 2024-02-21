@@ -24,6 +24,7 @@ local puzzleInitialY = 190
 local woodBox, background
 local level
 local imageName = "tucan"
+local goBackButton
 
 -- Groups
 
@@ -112,6 +113,15 @@ local function clearDisplay()
     display.remove(backgroundGroup)
 end
 
+local function goToMenu(event)
+    clearPuzzle()
+    local options = 
+    {
+        effect = "slideRight",
+        time = 1000
+    }
+    composer.gotoScene("menu", options)
+end
 
 local function completePuzzle()
     if puzzleMatrix[gridSize][gridSize] == "empty" then
@@ -302,11 +312,11 @@ function scene:create( event )
     backgroundGroup = display.newGroup()
     sceneGroup:insert(backgroundGroup)
 
-    puzzleGroup = display.newGroup()
-    sceneGroup:insert(puzzleGroup)
-
     interfaceGroup = display.newGroup()
     sceneGroup:insert(interfaceGroup)
+
+    puzzleGroup = display.newGroup()
+    sceneGroup:insert(puzzleGroup)
 
     background = display.newImageRect(backgroundGroup, resourcesPath .. "background.jpg", CW, CH)
     background.x = CW/2; background.y = CH/2
@@ -357,6 +367,10 @@ function scene:create( event )
     woodBox = display.newImageRect(backgroundGroup, resourcesPath .. "woodenbox.png", 600, 600)
     woodBox.x = woodBoxPositionX; woodBox.y = woodBoxPositionY
 
+    goBackButton = display.newImageRect(sceneGroup, resourcesPath .. "goBack.png", 80, 80)
+    goBackButton.x = puzzleInitialX - 120; goBackButton.y = puzzleInitialY - 150
+    goBackButton.anchorX = 0; goBackButton.anchorY = 0
+
     initPuzzle()
 end
  
@@ -373,6 +387,7 @@ function scene:show( event )
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         startButton:addEventListener("touch", buttonTouched)
+        goBackButton:addEventListener("touch", goToMenu)
  
     end
 end

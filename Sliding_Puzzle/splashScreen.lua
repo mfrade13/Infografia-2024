@@ -9,7 +9,7 @@ local slidingText, puzzleText
 
 -- Functions
 
-function goToMenu(event)
+local function goToMenu(event)
     local options = 
     {
         effect = "slideLeft",

@@ -2,10 +2,26 @@ local composer = require( "composer" )
  
 local scene = composer.newScene()
  
-local time, moves
+-- Variables
 
+local time, moves
+local background, overlay
 local puzzleInitialX = 130 
 local puzzleInitialY = 90
+local woodScoreBox, completedText, timeText, movementsText
+local goBackButton
+
+-- Functions
+
+local function goToMenu(event)
+    local options = 
+    {
+        effect = "slideRight",
+        time = 1000
+    }
+    composer.gotoScene("menu", options)
+end
+
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -25,7 +41,7 @@ function scene:create( event )
     background = display.newImageRect(sceneGroup, resourcesPath .. "background.jpg", CW, CH)
     background.x = CW/2; background.y = CH/2
 
-    local overlay = display.newRect(sceneGroup, CW/2, CH/2, CW, CH)
+    overlay = display.newRect(sceneGroup, CW/2, CH/2, CW, CH)
     overlay:setFillColor(0, 0, 0) 
     overlay.alpha = 0.6
 
@@ -65,6 +81,10 @@ function scene:create( event )
     })
     movementsText:setFillColor(1, 1, 1)
     movementsText.anchorX = 0; movementsText.anchorY = 0
+
+    goBackButton = display.newImageRect(sceneGroup, resourcesPath .. "goBack.png", 80, 80)
+    goBackButton.x = puzzleInitialX - 100; goBackButton.y = puzzleInitialY - 50
+    goBackButton.anchorX = 0; goBackButton.anchorY = 0
 end
  
  
@@ -79,6 +99,7 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
+        goBackButton:addEventListener("touch", goToMenu)
  
     end
 end
