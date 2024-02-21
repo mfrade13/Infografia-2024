@@ -12,13 +12,13 @@ local _W, _H, _CX, _CY = relayout._W, relayout._H, relayout._CX, relayout._CY  -
 -- Escena
 local scene = composer.newScene() -- Creando una nueva escena con Composer
 
--- Groups
+-- Grupos
 local _grpMain -- Grupo principal de visualización
 local _grpBackgrounds -- Grupo para los objetos de fondo
 local _grpWorld -- Grupo para los objetos del mundo
 local _grpHud -- Grupo para los elementos de la interfaz de usuario (HUD)
 
--- Misc
+-- variables imp
 local _playing = false -- Bandera para rastrear si el juego está en curso
 local _score = 0 -- Puntuación del jugador
 local _blockWidth = _W * 0.25 -- Ancho de cada bloque
@@ -30,7 +30,7 @@ local _lblTapToStart = "" -- Etiqueta para "Toque para comenzar"
 
 -- Object
 local _player -- Objeto del jugador
---bloques
+-- Bloques
 local _b1
 local _b2
 local _b3
@@ -50,15 +50,12 @@ local _sndJump = audio.loadStream("assets/sounds/jump.mp3")
 local _sndLose = audio.loadStream("assets/sounds/crash.mp3")
 local _click = audio.loadStream("assets/sounds/click.mp3")
 
---
--- Functions
-
 local touch = {}
 local enterFrame = {}
 
 
 --
--- Local functions
+-- funciones
 
 -- Función para ir a la escena de fin del juego
 local function gotoGameover()
@@ -109,8 +106,6 @@ local function randomizeBlocks()
     else
         _player.fill = _clrYellow
     end
-
-    --
 
     _blockIDS = shuffle(_blockIDS)
 
@@ -255,8 +250,6 @@ function enterFrame()
     end
 end
 
-
---
 -- Función de crear la escena
 
 function scene:create( event )
@@ -277,8 +270,6 @@ function scene:create( event )
 
     _grpHud = display.newGroup()
     _grpMain:insert(_grpHud)
-
-    --
 
     -- Backgrounds
 

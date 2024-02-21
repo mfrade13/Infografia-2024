@@ -6,28 +6,26 @@ local relayout = require("libs.relayout")
 local utilities = require("classes.utilities")
 
 
---
--- Set variables
 
--- Layout
+-- variables
 local _W, _H, _CX, _CY = relayout._W, relayout._H, relayout._CX, relayout._CY 
 
 -- Scene
 local scene = composer.newScene()
 
--- Groups
+-- Grupo
 local _grpMain
 
--- Sounds
+-- Sonidos
 local _click = audio.loadStream("assets/sounds/click.mp3")
 
--- Buttons
+-- Butones
 local _lblSoundsButton
 local _lblMusicButton
 
 
 --
--- Local functions
+-- Funciones
 
 local function gotoMenu()
 
@@ -58,8 +56,7 @@ local function toggleMusic()
 end
 
 
---
--- Scene events functions
+-- Scene events
 
 function scene:create( event )
 
@@ -69,19 +66,17 @@ function scene:create( event )
 
     self.view:insert(_grpMain)
 
-    --
-
     -- Background
     local background = display.newImageRect(_grpMain, "assets/images/background.jpg", _W, _H)
     background.x = _CX
     background.y = _CY
 
-    -- Title
+    -- Titulo
     local title = display.newText("Settings", _CX, 100, native.systemFont, 80)
     title.fill = { 0, 0, 0 }
     _grpMain:insert(title)
 
-    -- Sound title and button
+    -- Titulo de sonido y btn
     local lblSoundsTitle = display.newText("Sounds", _CX - 80, _CY - 50, native.systemFont, 22)
     lblSoundsTitle.fill = { 0, 0, 0 }
     _grpMain:insert(lblSoundsTitle)
@@ -92,7 +87,7 @@ function scene:create( event )
 
     _lblSoundsButton:addEventListener("tap", toggleSounds)
 
-    -- Music title and button
+    -- Titulo de musica y btn
     local lblMusicTitle = display.newText("Music", _CX + 80, _CY - 50, native.systemFont, 22)
     lblMusicTitle.fill = { 0, 0, 0 }
     _grpMain:insert(lblMusicTitle)
@@ -103,7 +98,7 @@ function scene:create( event )
 
     _lblMusicButton:addEventListener("tap", toggleMusic)
 
-    -- Close button
+    -- Close btn
     local btnMenu = display.newRect(_grpMain, _W - 30, 30, 50, 50)
     btnMenu.alpha = 0.01
 
@@ -144,9 +139,7 @@ function scene:destroy( event )
     end
 end
 
-
---
--- Scene event listeners
+-- Listeners
 
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )

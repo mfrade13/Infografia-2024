@@ -4,21 +4,12 @@
 local GGData = require("libs.GGData")
 
 
---
--- Create class, set variables
-
 local utilities = {}
 --iniciamos la db
 local db = GGData:new("db")
 
 utilities.leaderBoardId = "CgkIjtib4MkYEAIQAq"
-utilities.admob_id = "ca-app-pub-7458926770415601~7831222224"
-utilities.admob_interstitial_id = "ca-app-pub-7458926770415601/8952712180"
-utilities.numShowAds = 5
 
-
---
--- Init db
 
 if not db.sounds then
     db:set("sounds", "On")
@@ -45,9 +36,7 @@ if not db.numPlay then
     db:save()
 end
 
-
---
--- Sounds
+-- Sonidos
 
 function utilities:checkSounds()
 
@@ -130,8 +119,7 @@ function utilities:setTmpScore(score)
 end
 
 
---
--- Num plays / show ads
+-- Num plays
 
 function utilities:getNumPlays()
 
@@ -150,23 +138,5 @@ function utilities:resetNumPlays()
     db:save()
 end
 
-function utilities:canShowAd()
-
-    if utilities:getNumPlays() >= utilities.numShowAds then
-        print("Show ad")
-        utilities:resetNumPlays()
-
-        return true
-    else
-        print("Increas ad")
-        utilities:increaseNumPlays()
-
-        return false
-    end
-end
-
-
---
--- Return
 
 return utilities

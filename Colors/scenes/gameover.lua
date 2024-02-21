@@ -1,4 +1,3 @@
---
 -- Import
 
 local composer = require("composer")
@@ -15,7 +14,7 @@ local scene = composer.newScene()
 local _grpMain
 local _grpContent
 
--- Sounds
+-- Sonidos
 local _click = audio.loadStream("assets/sounds/click.mp3")
 
 
@@ -36,7 +35,7 @@ end
 
 
 --
--- Scene events functions
+-- Scene events
 
 function scene:create( event )
 
@@ -46,8 +45,6 @@ function scene:create( event )
 
     self.view:insert(_grpMain)
 
-    --
-
     local background = display.newImageRect(_grpMain, "assets/images/background.jpg", _W, _H)
     background.x = _CX
     background.y = _CY
@@ -55,13 +52,11 @@ function scene:create( event )
     _grpContent = display.newGroup()
     _grpMain:insert(_grpContent)
 
-    -- Title
+    -- Titulo
 
     local title = display.newText("Game over", _CX, 100, native.systemFont, 60)
     title.fill = { 0, 0, 0 }
     _grpContent:insert(title)   
-
-    --
 
     local isHighscore = utilities:setHighscore(utilities:getTmpScore())
 
@@ -72,8 +67,6 @@ function scene:create( event )
     local lblCurrentHighscore = display.newText("Highscore: " .. utilities:getHighscore(), _CX, _CY - 5, native.systemFont, 16)
     lblCurrentHighscore.fill = { 0, 0, 0 }
     _grpContent:insert(lblCurrentHighscore)
-
-    --
 
     if isHighscore then
         local lblHighscore = display.newText("HIGHSCORE!", _CX, _CY - 80, native.systemFont, 30)
@@ -88,7 +81,7 @@ function scene:create( event )
         transition.to(lblHighscore, {time=200, xScale=1, yScale=1, delay=1000})
     end
 
-    -- Restart button
+    -- Restart btn
     local btnPlay = display.newRoundedRect( _grpContent, _CX, _CY + 80, 220, 80, 20)
     btnPlay.fill = { 1, 1, 1 }
     btnPlay.alpha = 0.4;
@@ -99,7 +92,7 @@ function scene:create( event )
     lblPlay.fill = { 0, 0, 0 }
     _grpContent:insert(lblPlay)
 
-    -- Menu button
+    -- Menu btn
     local btnMenu = display.newText("Menu", _CX, _H - 100, native.systemFont, 26)
     btnMenu.fill = { 0, 0, 0 }
     _grpContent:insert(btnMenu)
@@ -129,9 +122,7 @@ function scene:destroy( event )
     end
 end
 
-
---
--- Scene event listeners
+-- listeners
 
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )

@@ -1,4 +1,3 @@
---
 -- Import
 
 local composer = require("composer")
@@ -6,24 +5,21 @@ local relayout = require("libs.relayout")
 local utilities = require("classes.utilities")
 
 
---
--- Set variables
+-- variables
 
--- Layout
 local _W, _H, _CX, _CY = relayout._W, relayout._H, relayout._CX, relayout._CY 
 
 -- Scene
 local scene = composer.newScene()
 
--- Groups
+-- Grupo
 local _grpMain
 
--- Sounds
+-- Sonidos
 local _click = audio.loadStream("assets/sounds/click.mp3")
 
 
---
--- Local functions
+-- Funciones
 
 local function gotoGame()
 
@@ -40,8 +36,7 @@ local function gotoSettings()
 end
 
 
---
--- Scene events functions
+-- Scene events
 
 function scene:create( event )
 
