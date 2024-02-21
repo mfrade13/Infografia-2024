@@ -101,7 +101,6 @@ function createAuxiliaryButton(planet, imagePath, posX, posY, initPosX, initPosY
     end
     
     table.insert(planetsAuxButtons[planet], btn)
-
     return btn
 end
 
@@ -162,9 +161,10 @@ function showPlanetsButtons()
         transition.to(btn, {x = btn.initX, y = btn.initY, time = 2000})
         btn.isVisible = true
     end
+    toggleAuxiliaryButtonsVisibility(false)
 end
 
-local function movePlanetsButtonsToCenter()
+function movePlanetsButtonsToCenter()
     for i = 1, planetsButtonGroup.numChildren do
         local btn = planetsButtonGroup[i]
         transition.to(btn, {x = play.x, y = play.y, time = 2000})
@@ -176,8 +176,18 @@ local function movePlanetsButtonsToCenter()
     end)
 end
 
+function toggleAuxiliaryButtonsVisibility(visible)
+    for _, planet in ipairs(planets) do
+        local planetButtonSet = planetsAuxButtons[planet]
+        for _, auxBtn in ipairs(planetButtonSet) do
+            auxBtn.isVisible = visible
+        end
+    end
+end
+
 function pressPlay()
     if not isPlaying then
+        toggleAuxiliaryButtonsVisibility(false)
         Runtime:addEventListener("enterFrame", rotate)
         bigBang()
         isPlaying = true 
@@ -377,7 +387,7 @@ function pressStop(event)
     placePlanets()
     movePlanetsButtonsToCenter()
     isPlaying = false
-
+    toggleAuxiliaryButtonsVisibility(false)
 end
 
 -- create()
