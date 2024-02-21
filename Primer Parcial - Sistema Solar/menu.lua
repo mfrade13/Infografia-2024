@@ -20,8 +20,6 @@ function create_star()
 end
 
 function move_background(event)
-    --stars[#stars + 1] = create_star()
-    --print( "--------------------------" .. #stars )
     for i = 1, #stars do
         local dx = CW/2 - stars[i].x
         local dy = CH/2 - stars[i].y
@@ -67,8 +65,8 @@ function scene:create( event )
     button.strokeWidth = 4
     button:setStrokeColor(1, 1, 1) 
 
-    local textButton = display.newText(sceneGroup, "START", CW/2, CH/2, "Arial", 36) -- Ajusta el tamaño del texto según tus preferencias
-    textButton:setFillColor(1, 1, 1) -- Color del texto
+    local textButton = display.newText(sceneGroup, "START", CW/2, CH/2, "Arial", 36)
+    textButton:setFillColor(1, 1, 1) 
 
     button:addEventListener( "touch", goto_simulador )
 

@@ -19,23 +19,6 @@ local pausado = true
 local transition_expand = false
 local iconX = 30
 local iconY = 30
---[[
-local menuVertical1 = display.newRect(CW/8, 0, 5, CH)
-menuVertical1.anchorX = 0
-menuVertical1.anchorY = 0
-
-local menuVertical2 = display.newRect(CW/100, 0, 5, CH)
-menuVertical2.anchorX = 0
-menuVertical2.anchorY = 0
-
-local menuHorizontal1 = display.newRect(0, CH/12, CW, 5)
-menuHorizontal1.anchorX = 0
-menuHorizontal1.anchorY = 0
-
-local menuHorizontal2 = display.newRect(0, CH/16 * 3, CW, 5)
-menuHorizontal2.anchorX = 0
-menuHorizontal2.anchorY = 0
-]]--
 
 function draw_background()
     print( "Creando Fondo" )
@@ -59,6 +42,7 @@ function create_moon(group, path, planet, xo, yo, sizeX, sizeY, Rx, Ry, angule, 
     moon.speed = speed
     moon.planet = string.lower(planet)
     moon.name = planet
+    moon.group = group
     print("Distance:", distance)
 
     return moon
@@ -149,14 +133,12 @@ end
 function move_moon(event)
     if (pausado == false and transition_expand == false) then
         for _, moon in pairs(moons) do
-            local planet = planetas[moon.planet]  -- Obtener el planeta principal de la luna
+            local planet = planetas[moon.planet]
             print("MOOOON   Distance:", moon.distance)
             local newX, newY = get_elipse_values(planet.x, planet.y, planet.Rx, planet.Ry, planet.angule + 15)
-            --moon.x = newX + 15 * math.cos(moon.angule)  -- Calcular la nueva posición X basada en el ángulo de la luna y su distancia desde el planeta
-            --moon.y = newY + 15 * math.sin(moon.angule)  -- Calcular la nueva posición Y basada en el ángulo de la luna y su distancia desde el planeta
-            local rotationOffsetX = 15 * math.cos(moon.angule)  -- Calcular el desplazamiento X basado en el ángulo de la luna y su distancia desde el planeta
-            local rotationOffsetY = 15 * math.sin(moon.angule)  -- Calcular el desplazamiento Y basado en el ángulo de la luna y su distancia desde el planeta
-            moon.x = newX + rotationOffsetX  -- Ajustar la posición X de la luna basada en el desplazamiento rotacional
+            local rotationOffsetX = 15 * math.cos(moon.angule)
+            local rotationOffsetY = 15 * math.sin(moon.angule)
+            moon.x = newX + rotationOffsetX
             moon.y = newY + rotationOffsetY
             moon.angule = moon.angule + moon.speed
         end
@@ -209,8 +191,11 @@ function collapse_planets()
             yScale = 0.01
         }
         transition.to( planet, params )
-        if moons[planet.name] then
-            transition.to(moons[planet.name], params)
+        
+        for _, moon in pairs(moons) do
+            if moon.group == planet.group then
+                transition.to( moon, params )
+            end
         end
         
     end
@@ -229,7 +214,6 @@ end
 function expand_planets()
     for k,planet in pairs(planetas) do
         
-        print(planet.lastX, planet.lastY )
         local params = {
             time = 600,
             x = planet.lastX,
@@ -240,10 +224,8 @@ function expand_planets()
                 transition_expand = false
             end
         }
+
         transition.to( planet, params )
-        if moons[planet.name] then
-            transition.to(moons[planet.name], params)
-        end
 
     end
     transition.to(sun, {time = 1000, xScale = 1, yScale = 1})
@@ -332,7 +314,7 @@ function set_jupiter_visibility(self, event)
             groupJupiter.isVisible = true
             self.alpha = 1
         end
-    end.
+    end
 end
 
 function set_saturno_visibility(self, event)
@@ -491,10 +473,6 @@ function scene:create( event )
     neptuneButton = create_button("Neptune", CW/25, CH/7 + 60*8, iconX, iconY)
     asteroideButton = create_button("Asteroide", CW/25, CH/7 + 60*9, iconX, iconY)
 
-    --(group, path, xo, yo, sizeX, sizeY, Rx, Ry, angule, distance, rotation, speed)
-    --moonEarth = create_moon(groupEarth, "Moon.png", planetas["earth"].Xo, planetas["earth"].Yo, CW/10, CW/10, 35, 20, 10, 20, 0.08, 0.1)
-    --moonMars1 = create_moon(groupMars, "Moon.png", planetas["mars"].Xo, planetas["mars"].Yo, CW/10, CW/10, 35, 20, 10, 20, 0.08, 0.1),
-
     startButton:addEventListener( "touch",  change_status)
     pauseButton:addEventListener( "touch",  change_status)
 
@@ -502,13 +480,8 @@ function scene:create( event )
 
     Runtime:addEventListener("enterFrame",  rotate)
     Runtime:addEventListener( "enterFrame", move_planet)
-    --Runtime:addEventListener( "enterFrame", move_moon)
    -- Runtime:addEventListener( "enterFrame", move_asteroide)
-    --Runtime:addEventListener( "enterFrame", draw_background)
-    --Runtime:addEventListener("enterFrame", moveMoon)
 
-    --Variable si está pausado en movePlanet
-    --Si se presiona X botón, negación de isVisible()
 end
  
  
