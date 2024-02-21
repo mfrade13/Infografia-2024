@@ -30,6 +30,7 @@ local minAngleBomb = math.pi/3
 local maxAngleBomb = math.pi*2/3
 local numberFrames2Fruit = 200
 local probabilityBomb = 0.005
+local nextLevelScore = 200
 
 -- Display objects
 
@@ -208,7 +209,6 @@ function manageFruits()
     end
 
     if numberFrames > 200 then
-        print("here")
         numberFrames = 0
         addFruits()
     end
@@ -220,13 +220,27 @@ function manageFruits()
     numberFrames = numberFrames + 1
 end
 
+function incrementLevel()
+
+    if score >= nextLevelScore then
+        minVelocityFruit = minVelocityFruit + 0.2
+        maxVelocityFruit = maxVelocityFruit + 0.2
+        probabilityBomb = probabilityBomb + 0.001
+        minVelocityBomb = minVelocityBomb + 0.2
+        maxVelocityBomb = maxVelocityBomb + 0.2
+        
+        nextLevelScore = nextLevelScore + 200
+    end
+
+end
 
 
 
 function update()
     updateTrail()
     manageFruits()
-    
+    incrementLevel()
+
     if (lifes == 0 ) then
         endGame()
     end
