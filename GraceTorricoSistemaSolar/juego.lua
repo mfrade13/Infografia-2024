@@ -41,14 +41,14 @@ local planets
     createPlanets()
     local s = 20
     mainOrbits = {
-        mercurio = {a = 330, b = 100 - s, theta = math.pi / 4, center = sol},
-        venus = {a = 380, b = 200 - s, theta = math.pi + 30, center = sol},
-        tierra = {a = 390, b = 250 - s, theta = math.pi / 3, center = sol},
-        marte = {a = 500, b = 275 - s, theta = math.pi / 4, center = sol},
-        jupiter = {a = 370, b = 200 - s, theta = math.pi * 2, center = sol},
-        saturno = {a = 270, b = 70 - s, theta = math.pi / 2, center = sol},
-        urano = {a = 400, b = 250 - s, theta = math.pi + 240, center = sol},
-        neptuno = {a = 450, b = 250 - s, theta = math.pi + 50, center = sol}
+        mercurio = {a = 270, b = 100 - s, theta = math.pi, center = sol},
+        venus = {a = 300, b = 120 - s, theta = math.pi + 1, center = sol},
+        tierra = {a = 330, b = 140 - s, theta = math.pi + 1.5, center = sol},
+        marte = {a = 360, b = 160 - s, theta = math.pi + 2, center = sol},
+        jupiter = {a = 390, b = 180 - s, theta = math.pi + 2.5, center = sol},
+        saturno = {a = 420, b = 200 - s, theta = math.pi + 3, center = sol},
+        urano = {a = 450, b = 220 - s, theta = math.pi + 3.5, center = sol},
+        neptuno = {a = 480, b = 240 - s, theta = math.pi + 4, center = sol}
     }
     
     createOrbits()
@@ -87,8 +87,10 @@ function createAuxiliaryButtons()
 
     for i, planet in ipairs(planets) do
         local btnShowHide = display.newImageRect(mainpath.."play.png", btnWidth, btnHeight)
-        btnShowHide.x = play.x + 150 + (i - 1) * gapX
-        btnShowHide.y = startY - 40
+        btnShowHide.x = play.x
+        btnShowHide.y = play.y
+        btnShowHide.initX = play.x + 150 + (i - 1) * gapX
+        btnShowHide.initY = startY - 40
         btnShowHide.isVisible = false
         planetsButtonGroup:insert(btnShowHide)
 
