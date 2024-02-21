@@ -45,14 +45,12 @@ end
 -- Add Event Listener for orientation
 Runtime:addEventListener( "orientation", onOrientationChange ) 
 
-
 function Displaybckground(x, y)
 	-- Background image
 	local background = display.newImageRect( screenGroup, "Fondo.png", 10000, 10000 )
 	background.x, background.y = display.contentCenterX, display.contentCenterY
 
 	-- Textbox
-	
 	textbox = display.newText( screenGroup, "", x, y, native.systemFont, 35 )
 	textbox:setFillColor( 1,1,1 )
 	textbox.anchorX = 1
@@ -69,6 +67,7 @@ local calculate=""
 function cleanEvent( event )
 	textbox.text = ''
 	calculate = ""
+	textbox.size =35
 end
 
 -- Operators function
@@ -101,39 +100,37 @@ function operation( event )
 		calculate = calculate .. "" .. event.target.value
 		textbox.text = textbox.text .. "" .. event.target.value
 	end
+	verify_border()
 end
 
 -- Delete function
 function delete( event )
-	local b = string.ends(event.target.value, "sin") 
-	if string.ends(event.target.value, "sin")  or string.ends(event.target.value, "cos") or string.ends(event.target.value, "tan") then
+	
+	if string.ends(textbox.text, "sin")  or string.ends(textbox.text, "cos") or string.ends(textbox.text, "tan") then
 		calculate = calculate:sub(1, -9)
-		textbox.text = textbox.textsub(1, -4)
-	elseif string.ends(event.target.value, "log")then
+		textbox.text = textbox.text:sub(1, -4)
+	elseif string.ends(textbox.text, "log")then
 		calculate = calculate:sub(1, -11)
-		textbox.text = textbox.textsub(1, -4)
-	elseif string.ends(event.target.value, "ln")then
+		textbox.text = textbox.text:sub(1, -4)
+	elseif string.ends(textbox.text, "ln")then
 		calculate = calculate:sub(1, -9)
-		textbox.text = textbox.textsub(1, -3)
-	elseif string.ends(event.target.value, "e")then
+		textbox.text = textbox.text:sub(1, -3)
+	elseif string.ends(textbox.text, "e")then
 		calculate = calculate:sub(1, -12)
-		textbox.text = textbox.textsub(1, -2)	
-	elseif string.ends(event.target.value, "π") then
+		textbox.text = textbox.text:sub(1, -2)	
+	elseif string.ends(textbox.text, "π") then
 		calculate = calculate:sub(1, -8)
-		textbox.text = textbox.textsub(1, -3)	
+		textbox.text = textbox.text:sub(1, -3)	
 	else
 		textbox.text = textbox.text:sub(1, -2)
 		calculate = calculate:sub(1, -2)
 	end
-
-	print(calculate)
 end
 
 -- Calculate
 function Calculate( event )
 	local expression = "return " .. calculate
 	local func = loadstring(expression)
-	print(expression)
 	if pcall(func) then
 		textbox.text = func()
 		calculate = textbox.text
@@ -144,7 +141,7 @@ end
 
 --Round
 function round( event )
-	if string.match(event.target.value, "%d$") ~= nil then
+	if string.match(textbox.text, "%d") ~= nil then
 		local expression = "return math.floor(" .. calculate .. "+ 0.5)"
 		local func = loadstring(expression)
 		textbox.text = func()
@@ -172,7 +169,7 @@ function landscape()
 
 	local m_y = display.contentHeight*2/5
 	local m_x = display.screenOriginY - display.contentWidth/r
-	Displaybckground(display.contentCenterX, 70+display.screenOriginY)
+	Displaybckground(display.contentWidth - r, 70+display.screenOriginY)
 	local Vlist = {
 		"AC", "7","8","9","*", "sin", "^", "√",
 		"(", "4","5","6","+",  "cos", "e", "x^2",
@@ -220,7 +217,7 @@ function landscape()
 end
 
 function portrait()
-	Displaybckground(display.contentCenterX, 150+display.screenOriginY)
+	Displaybckground(display.contentWidth - radio, 150+display.screenOriginY)
 	local m_y = display.contentHeight*2/5
 	local m_x = display.screenOriginY
 	local Vlist = {
@@ -262,6 +259,15 @@ function portrait()
 		if x > 3 then
 			x = 0
 			y = y + 1
+		end
+	end
+end
+
+function verify_border()
+    if textbox.size > 20 then 
+		print(string.len( textbox.text ), display.contentWidth / textbox.size)
+		if (string.len( textbox.text ) > display.contentWidth / textbox.size) then
+			textbox.size = textbox.size - 3
 		end
 	end
 end
