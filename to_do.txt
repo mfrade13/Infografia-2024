@@ -11,7 +11,7 @@
 * gameover scene
 * trayectoria parabólica
     - no se deben salir de la pantalla en el eje x
-* remove fruits
+* remove fruits X
 
 
 -----------------
