@@ -172,16 +172,19 @@ function placePlanets()
 end
 
 function bigBang()
-    transition.to(sol, {x= CW/2, y=CH/2-50, time=2000})
-    transition.to(mercurio, {x=CW/2 + 250 * math.cos(math.pi / 4 ), y=CH/2 - 100 * math.sin(math.pi/4), time=2000})
-    transition.to(venus, {x= 700, y=300, time=2000})
-    transition.to(tierra, {x= 340, y=550, time=2000})
-    transition.to(marte, {x= 400, y=100, time=2000})
-    transition.to(jupiter, {x= 100, y=570, time=2000})
-    transition.to(saturno, {x= 340, y=700, time=2000})
-    transition.to(urano, {x=670, y=500, time=2000})
-    transition.to(neptuno, {x=800, y=630, time=2000, onComplete=start})
+    local s = 20
+    local t = system.getTimer() * 0.001
+    transition.to(sol, {x = CW / 2, y = CH / 2 - 50, time = 2000})
+    transition.to(mercurio, {x = CW / 2 + 270 * math.cos(math.pi + t), y = CH / 2 - (100 - s) * math.sin(math.pi + t), time = 2000})
+    transition.to(venus, {x = CW / 2 + 300 * math.cos(math.pi + 1 + t), y = CH / 2 - (120 - s) * math.sin(math.pi + 1 + t), time = 2000})
+    transition.to(tierra, {x = CW / 2 + 330 * math.cos(math.pi + 1.5 + t), y = CH / 2 - (140 - s) * math.sin(math.pi + 1.5 + t), time = 2000})
+    transition.to(marte, {x = CW / 2 + 360 * math.cos(math.pi + 2 + t), y = CH / 2 - (160 - s) * math.sin(math.pi + 2 + t), time = 2000})
+    transition.to(jupiter, {x = CW / 2 + 390 * math.cos(math.pi + 2.5 + t), y = CH / 2 - (180 - s) * math.sin(math.pi + 2.5 + t), time = 2000})
+    transition.to(saturno, {x = CW / 2 + 420 * math.cos(math.pi + 3 + t), y = CH / 2 - (200 - s) * math.sin(math.pi + 3 + t), time = 2000})
+    transition.to(urano, {x = CW / 2 + 450 * math.cos(math.pi + 3.5 + t), y = CH / 2 - (220 - s) * math.sin(math.pi + 3.5 + t), time = 2000})
+    transition.to(neptuno, {x = CW / 2 + 480 * math.cos(math.pi + 4 + t), y = CH / 2 - (240 - s) * math.sin(math.pi + 4 + t), time = 2000, onComplete = start})
 end
+
 
 function addMoon(planet)
     local moon = display.newImageRect(mainpath.."Luna.png", 20, 20)
