@@ -65,8 +65,8 @@ function createButtons()
 
     for i, planet in ipairs(planets) do
         local btn = display.newImageRect(mainpath.."button_"..planet..".png", btnWidth, btnHeight)
-        btn.x = play.x
-        btn.y=play.y
+        btn.x = play.x + 70
+        btn.y=play.y + 70
         btn.initX = startX + (i - 1) * gapX
         btn.initY =play.y
         btn.isVisible = false
@@ -79,42 +79,69 @@ function createButtons()
     end
 end
 
-function createAuxiliaryButtons()
+function createAuxiliaryButton(imagePath, posX, posY, initPosX, initPosY, onTouch)
     local btnWidth = 30
     local btnHeight = 30
+    local btn = display.newImageRect(mainpath..imagePath, btnWidth, btnHeight)
+    btn.x = posX
+    btn.y = posY
+    btn.initX = initPosX
+    btn.initY = initPosY
+    btn.isVisible = false
+    btn.pressed = false
+    planetsButtonGroup:insert(btn)
+    btn:addEventListener("touch", onTouch)
+    return btn
+end
+
+function createAuxiliaryButtons()
+    local btnStartX = play.x + 145
     local startY = 720
     local gapX = 100
+    local x = play.x + 70
+    local y = play.y + 70
 
     for i, planet in ipairs(planets) do
-        local btnShowHide = display.newImageRect(mainpath.."play.png", btnWidth, btnHeight)
-        btnShowHide.x = play.x
-        btnShowHide.y = play.y
-        btnShowHide.initX = play.x + 150 + (i - 1) * gapX
-        btnShowHide.initY = startY - 40
-        btnShowHide.isVisible = false
-        planetsButtonGroup:insert(btnShowHide)
+        local initX = btnStartX + (i - 1) * gapX
+        local initY = startY - 40
 
-        btnShowHide:addEventListener("touch", function(event)
+        local btnPlanet = createAuxiliaryButton(planet:gsub("^%l", string.upper)..".png", x, y, initX, initY, function(event)
             if event.phase == "ended" then
-                togglePlanetVisibility(planet)
+                local planetObject = _G[planet]
+                if planetObject then
+                    planetObject.isVisible = not planetObject.isVisible
+                end
+            end
+        end)
+
+        local btnOrbit = createAuxiliaryButton("pencil.png", x, y, initX + 30, initY, function(event)
+            local orbitP = orbits[planet]
+            if event.phase == "ended" then
+                if orbitP then
+                    orbitP.isVisible = not orbitP.isVisible
+                end
+            end
+        end)
+
+        local btnMoon = createAuxiliaryButton("Luna.png", x, y, initX + 60, initY, function(event)
+            if event.phase == "ended" then
+                local btn = event.target
+                btn.pressed = not btn.pressed
+                if btn.pressed then
+                    removeMoonsFromPlanet(planet)
+                else
+                    addMoon(planet)
+                end
             end
         end)
     end
 end
 
-
-function togglePlanetVisibility(planet)
-    local planetObject = _G[planet]
-    local orbitP = orbits[planet]
-
-    if planetObject then
-        planetObject.isVisible = not planetObject.isVisible
-    end
-
-    hidePlanetMoons(planet)
-
-    if orbitP then
-        orbitP.isVisible = not orbitP.isVisible
+function toggleMoonVisibility(planet)
+    if mainMoons[planet] then
+        for _, moon in ipairs(mainMoons[planet]) do
+            moon.isVisible = not moon.isVisible
+        end
     end
 end
 
@@ -296,14 +323,6 @@ function removeMoonsFromPlanet(planet)
     end
 end
 
-function hidePlanetMoons(planet)
-    if mainMoons[planet] then
-        for i = #mainMoons[planet], 1, -1 do
-            mainMoons[planet][i].isVisible = false
-        end
-    end
-end
-
 function removeAllMoons()
     for planet, moons in pairs(mainMoons) do
         for i = #moons, 1, -1 do
@@ -368,11 +387,6 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        --local f1 = crear_frutas()
-        --sceneGroup.insert(f1)
-        --for  i = 1, dificultad, 1 do
-          --  crear_frutas(sceneGroup)
-        --end
     end
 end
  
