@@ -61,7 +61,11 @@ function createTrail(event)
                 score = score + 10
                 
                 if (fruit.tag == "bomb") then
-                    endGame()
+                    local fire = display.newImageRect(grpMain, 'assets/fire.png', 20, 20)
+                    fire.x = event.x
+                    fire.y = event.y
+                    
+                    transition.to(fire, { time = 1000, xScale = 50, yScale = 50, rotation = 2720, onComplete = endGame})                    
                 end
 
                 fruit.isVisible = false
