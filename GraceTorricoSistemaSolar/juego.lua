@@ -16,12 +16,14 @@ local sol
 local isPlaying = false
 local mainOrbits = {}
 local mainMoons = {}
+local planetMoo = {}
 local showingMoons = false
 local orbits = {}
 local orbit
 local planetsButtonGroup
 local planetsAuxButtons = {}
 local planets
+local velocity
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -30,6 +32,7 @@ local planets
     fondo = display.newImageRect(mainpath.."bckg.jpg",CW,CH)
     fondo.anchorX=0; fondo.anchorY=0
     fondo.alpha=1
+    velocity = 0.0008
     planets = {"mercurio", "venus", "tierra", "marte", "jupiter", "saturno", "urano", "neptuno"}
     play = display.newImageRect(mainpath.."play.png", 60, 60)
     play.x = 50; play.y = 720
@@ -51,7 +54,16 @@ local planets
         urano = {a = 450, b = 220 - s, theta = math.pi + 3.5, center = sol},
         neptuno = {a = 480, b = 240 - s, theta = math.pi + 4, center = sol}
     }
-    
+    planetMoo = {
+        mercurio = {"Luna.png", "Marte.png"},
+        venus = {"Luna.png", "Luna.png", "Luna.png" },
+        tierra = {"Satelite.png", "Satelite.png", "astronaut.png"},
+        marte = {"Luna.png", "astronaut.png" },
+        jupiter = {"Alien.png", "Alien.png"},
+        saturno = {"Luna.png", "Satelite.png"},
+        urano = {"Luna.png"},
+        neptuno = {"Sol.png", "Marte.png"}
+    }
     createOrbits()
     createMoons()
 end
@@ -140,12 +152,13 @@ function createAuxiliaryButtons()
                 if btn.pressed then
                     removeMoonsFromPlanet(planet)
                 else
-                    addMoon(planet)
+                    getPlanetMoo(planet, planetMoo[planet])
                 end
             end
         end)
     end
 end
+
 
 function toggleMoonVisibility(planet)
     if mainMoons[planet] then
@@ -234,8 +247,8 @@ function bigBang()
 end
 
 
-function addMoon(planet)
-    local moon = display.newImageRect(mainpath.."Luna.png", 20, 20)
+function addMoon(planet, image)
+    local moon = display.newImageRect(mainpath..image, 20, 20)
     moon.planet = planet  
     local planetObject = _G[planet]
     if planetObject then
@@ -250,17 +263,22 @@ function addMoon(planet)
 end
 
 function createMoons()
-
-    for planet, _ in pairs(mainOrbits) do
-        addMoon(planet)
+    for planet, moons in pairs(planetMoo) do
+        getPlanetMoo(planet, moons)
     end
+end
+
+function getPlanetMoo(planet, moons)
+    for _, moonImage in ipairs(moons) do
+            addMoon(planet, moonImage)
+        end
 end
 
 function moveMoon(planet)
     local planetObject = _G[planet]
     local moons = mainMoons[planet]
     if moons and planetObject then
-        local t = system.getTimer() * 0.003
+        local t = system.getTimer() * 0.002
         for _, moon in ipairs(moons) do 
             if moon.isVisible then  
                 local x = planetObject.x + 70 * math.cos(moon.theta + t)
@@ -275,7 +293,7 @@ end
 
 function movePlanet(planet)
     local orbit = orbits[planet]
-    local t = system.getTimer() * 0.001
+    local t = system.getTimer() * velocity
     local x = orbit.center.x + orbit.a * math.cos(orbit.theta + t)
     local y = orbit.center.y - orbit.b * math.sin(orbit.theta + t)
     local planetObject = _G[planet]
@@ -306,7 +324,7 @@ end
 
 function updateOrbits()
     for _, orbit in pairs(orbits) do
-        local t = system.getTimer() * 0.001
+        local t = system.getTimer() * velocity
         local x = orbit.center.x + orbit.a * math.cos(orbit.theta + t) 
         local y = orbit.center.y - orbit.b * math.sin(orbit.theta + t) 
         orbit:append(x, y)
