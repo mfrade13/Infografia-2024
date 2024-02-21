@@ -139,9 +139,15 @@ function Calculate( event )
 	end
 end
 
+
+function isNumber( value )
+    local pattern = "^[-+]?%d*%.?%d+$"
+    return value:match(pattern) ~= nil
+end
+
 --Round
 function round( event )
-	if string.match(textbox.text, "%d") ~= nil then
+	if isNumber(textbox.text)then
 		local expression = "return math.floor(" .. calculate .. "+ 0.5)"
 		local func = loadstring(expression)
 		textbox.text = func()
