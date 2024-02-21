@@ -1,7 +1,8 @@
 local composer = require( "composer" )
- 
 local scene = composer.newScene()
-local background
+
+-- Groups
+
 local grpMain = display.newGroup()
 
 -- Variables
@@ -15,25 +16,24 @@ local fruitNames = {
 
 local fruits = {}
 local trail = {}
+local katanas = {}
 local score = 0
 local lifes = 3
-local katanas = {}
 local numberFrames = 0
+local minVelocityBomb = 7
+local maxVelocityBomb = 10
+local minVelocityFruit = 5
+local maxVelocityFruit = 8
+local minAngleFruit = math.pi/2.76
+local maxAngleFruit = math.pi*1.9/3
+local minAngleBomb = math.pi/3
+local maxAngleBomb = math.pi*2/3
+local numberFrames2Fruit = 200
+local probabilityBomb = 0.005
+
+-- Display objects
 
 local scoreLabel
-
-
-local xVelocities = {
-    -4,
-    -2,
-    2,
-    4
-}
-
-local yVelocities = {
-    -5,
-    -7,
-}
 
 function endGame()
     composer.gotoScene("scenes.gameover", { effect = "fade", time = 1000 })
@@ -44,42 +44,47 @@ function createTrail(event)
     if event.phase == "moved" then
         local x = event.x
         local y = event.y
+
         local dot = display.newCircle(grpMain, x, y, 10)
         dot:setFillColor(1,1,1)
         dot.alpha = 0.6
         table.insert(trail,dot)
 
+        -- Verify collision with every fruit
         for i = 1, #fruits, 1 do
             local fruit = fruits[i][1]
 
             if (event.x >= fruit.contentBounds.xMin) and (event.x <= fruit.contentBounds.xMax) and
-                (event.y >= fruit.contentBounds.yMin) and (event.y <= fruit.contentBounds.yMax) and fruits[i][7] then
+                (event.y >= fruit.contentBounds.yMin) and (event.y <= fruit.contentBounds.yMax) and
+                fruits[i][7] then
                 score = score + 10
                 
                 if (fruit.tag == "bomb") then
                     endGame()
                 end
-                fruit.isVisible =false
+
+                fruit.isVisible = false
                 fruits[i][7] = false
                 scoreLabel.text = score .. "p"
 
             end
         end
-        
     end
 end
 
 function updateTrail()
-    for i = #trail, 1, -1 do
+    for i = 1, #trail, 1 do
         local dot = trail[i]
         dot.alpha = dot.alpha - 0.02
 
-        if dot.alpha < -20 then
+        if dot.alpha < -1 then
             table.remove(trail, i)
+            
             if dot ~= nil then
                 dot:removeSelf()
                 dot = nil 
             end
+
         end
     end
 end
@@ -92,70 +97,95 @@ function updateFruitPosition(fruit, xo, yo, velocity, angle, t)
 
     fruit.x = xo + velocity * math.cos(angle) * t
     fruit.y = yo -  velocity * math.sin(angle) * t + 0.5 * gravity * t^2
+
 end
 
-function addFruit(isBomb)
+function addObject(tag, minAngle, maxAngle, minVelocity, maxVelocity)
+    local image, sizeX, sizeY
+
+    if tag == "bomb" then
+        image = 'assets/bomb.png'
+        sizeX = 90
+        sizeY = 120
+    else
+        local randomFruitIndex = math.random(1, #fruitNames)
+        image = fruitNames[randomFruitIndex]
+
+        if randomFruitIndex == 3 then --pineapple           
+            sizeX = 150
+            sizeY = 180
+        else
+            sizeX = 120
+            sizeY = 120
+        end
+    end
+
+    local object = display.newImageRect(grpMain, image, sizeX, sizeY)
+        
+    object.x = math.random(200, CW-200)
+    object.y = CH
+    object.tag = tag
+
+    local velocity = math.random(minVelocity, maxVelocity)
+    local angle = math.random(minAngle, maxAngle)
+    local xo = object.x
+    local yo = object.y
+    local time = 0
+
+    fruits[#fruits + 1] = {object, xo, yo, velocity, angle, time, true} -- Last argument: isActive
+end
+
+function addFruits(isBomb)
     local isBomb = isBomb or nil
 
     if isBomb then 
-        local bomb = display.newImageRect(grpMain,'assets/bomb.png', 90,120 )
-        
-        bomb.x = math.random(200, CW-200)
-        bomb.y = CH
-        bomb.tag = "bomb"
-        local velocity = math.random(7,12)
-        local angle = math.random(math.pi/3, math.pi-math.pi/3)
-        local xo = bomb.x
-        local yo = bomb.y
-        local time = 0
-        fruits[#fruits + 1] = {bomb, xo, yo, velocity, angle, time, true}
+        addObject("bomb", minAngleBomb, maxAngleBomb, minVelocityBomb, maxVelocityBomb)
+    else
+        for i = 1, #fruitNames, 1 do
+            addObject("fruit", minAngleFruit, maxAngleFruit, minVelocityFruit, maxVelocityFruit)
+         end   
     end
-    for i = #fruitNames, 1, -1 do
-        local fruit       
-        rand = math.random(1,#fruitNames)
-        if rand == 3 then --pineapple           
-            fruit = display.newImageRect(grpMain, fruitNames[rand], 150,180)
-        else
-            fruit = display.newImageRect(grpMain, fruitNames[rand], 120,120)
-        end
-        
+end
 
-        fruit.x = math.random(200, CW-200)
-        fruit.y = CH
-        local velocity = math.random(5,9)
-        local angle = math.random(math.pi/3, math.pi-math.pi*2/3)
-        local xo = fruit.x
-        local yo = fruit.y
-        local time = 0
-        fruits[#fruits + 1] = {fruit, xo, yo, velocity, angle, time, true}
-    end   
+function throwBomb()
+    
+    if math.random() < probabilityBomb then
+        return true
+    else
+        return false
+    end
+
+end
+
+function checkCollision(object, i)
+    if object.x <= 0 then -- right collision
+        fruits[i][2] = fruits[i][1].x -- xo
+        fruits[i][3] = fruits[i][1].y -- yo
+        fruits[i][4] = - (fruits[i][4] + 2)-- velocity
+        fruits[i][5] = fruits[i][5] + math.pi/4
+        fruits[i][6] = 0
+    elseif object.x >= CW  then -- left collision
+        fruits[i][2] = fruits[i][1].x -- xo
+        fruits[i][3] = fruits[i][1].y -- yo
+        fruits[i][5] = fruits[i][5] + math.pi * 9/10
+        fruits[i][6] = 0
+    elseif object.y <= 0 then -- top collision
+        fruits[i][2] = fruits[i][1].x
+        fruits[i][3] = fruits[i][1].y
+        fruits[i][4] = - fruits[i][4]
+        fruits[i][5] = fruits[i][5] + math.pi/9
+        fruits[i][6] = 0
+    end
 end
 
 function manageFruits()
     for i = #fruits, 1, -1 do
+        
         local localFruit = fruits[i][1]
-        fruits[i][6] = fruits[i][6] + 1
+        fruits[i][6] = fruits[i][6] + 1 --time
 
         updateFruitPosition(fruits[i][1],fruits[i][2], fruits[i][3], fruits[i][4], fruits[i][5], fruits[i][6])
-
-        if localFruit.x <= 0 then -- left collision
-            fruits[i][2] = fruits[i][1].x -- xo
-            fruits[i][3] = fruits[i][1].y -- yo
-            fruits[i][4] = - (fruits[i][4] + 2)-- velocity
-            fruits[i][5] = fruits[i][5] + math.pi/4
-            fruits[i][6] = 0
-        elseif localFruit.x >= CW  then -- right collision
-            fruits[i][2] = fruits[i][1].x -- xo
-            fruits[i][3] = fruits[i][1].y -- yo
-            fruits[i][5] = fruits[i][5] + math.pi * 9/10
-            fruits[i][6] = 0
-        elseif localFruit.y <= 0 then -- top collision
-            fruits[i][2] = fruits[i][1].x
-            fruits[i][3] = fruits[i][1].y
-            fruits[i][4] = - fruits[i][4]
-            fruits[i][5] = fruits[i][5] + math.pi/9
-            fruits[i][6] = 0
-        end
+        checkCollision(localFruit, i)
 
         if localFruit.y > CH + 80 or fruits[i][7] == false then
 
@@ -169,6 +199,7 @@ function manageFruits()
             end
 
             local b = table.remove(fruits, i)
+
             if b ~= nil then
                 b[1]:removeSelf()
                 b = nil 
@@ -177,14 +208,18 @@ function manageFruits()
     end
 
     if numberFrames > 200 then
+        print("here")
         numberFrames = 0
-        addFruit()
-    elseif numberFrames == 150 then
-        addFruit(true)
+        addFruits()
+    end
+
+    if throwBomb() then
+        addFruits(true)
     end
 
     numberFrames = numberFrames + 1
 end
+
 
 
 
@@ -204,9 +239,9 @@ end
 -- create()
 function scene:create( event )
     local sceneGroup = self.view
-
     sceneGroup:insert(grpMain)
-    background = display.newImageRect(grpMain, 'assets/background.png', CW, CH)
+    
+    local background = display.newImageRect(grpMain, 'assets/background.png', CW, CH)
     background.x = HW; background.y = HH
     
 
@@ -233,10 +268,8 @@ function scene:show( event )
         Runtime:addEventListener("enterFrame", update)
         Runtime:addEventListener("touch", createTrail)
         lifes = 3
- 
-    elseif ( phase == "did" ) then
-        
     end
+
 end
  
  
@@ -249,13 +282,9 @@ function scene:hide( event )
     if ( phase == "will" ) then
         Runtime:removeEventListener("enterFrame", update)
         Runtime:removeEventListener("touch", createTrail)
-        composer.removeScene("scenes.game")
-        
-    elseif ( phase == "did" ) then
-        
-        
-        
+        composer.removeScene("scenes.game") 
     end
+
 end
  
  

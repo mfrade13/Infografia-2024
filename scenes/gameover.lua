@@ -20,7 +20,7 @@ function scene:create( event )
     restart.x = HW; restart.y = HH + CH/5
 
     restart:addEventListener("touch", function ()
-        composer.gotoScene('scenes.menu',{ effect = "fade", time = 1000 })
+        composer.gotoScene('scenes.menu',{ effect = "slideLeft", time = 600 })
     end)
  
 end
