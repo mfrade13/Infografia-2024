@@ -20,6 +20,7 @@ local showingMoons = false
 local orbits = {}
 local orbit
 local planetsButtonGroup
+local planetsAuxButtons = {}
 local planets
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -73,13 +74,16 @@ function createButtons()
         planetsButtonGroup:insert(btn)
         btn:addEventListener("touch", function(event)
             if event.phase == "ended" then
-                print("Botón de " .. planet .. " presionado")
+                local planetButtonSet = planetsAuxButtons[planet]
+                for _, auxBtn in ipairs(planetButtonSet) do
+                    auxBtn.isVisible = not auxBtn.isVisible
+                end
             end
         end)
     end
 end
 
-function createAuxiliaryButton(imagePath, posX, posY, initPosX, initPosY, onTouch)
+function createAuxiliaryButton(planet, imagePath, posX, posY, initPosX, initPosY, onTouch)
     local btnWidth = 30
     local btnHeight = 30
     local btn = display.newImageRect(mainpath..imagePath, btnWidth, btnHeight)
@@ -91,6 +95,13 @@ function createAuxiliaryButton(imagePath, posX, posY, initPosX, initPosY, onTouc
     btn.pressed = false
     planetsButtonGroup:insert(btn)
     btn:addEventListener("touch", onTouch)
+
+    if not planetsAuxButtons[planet] then
+        planetsAuxButtons[planet] = {}
+    end
+    
+    table.insert(planetsAuxButtons[planet], btn)
+
     return btn
 end
 
@@ -105,7 +116,7 @@ function createAuxiliaryButtons()
         local initX = btnStartX + (i - 1) * gapX
         local initY = startY - 40
 
-        local btnPlanet = createAuxiliaryButton(planet:gsub("^%l", string.upper)..".png", x, y, initX, initY, function(event)
+        local btnPlanet = createAuxiliaryButton(planet, planet:gsub("^%l", string.upper)..".png", x, y, initX, initY, function(event)
             if event.phase == "ended" then
                 local planetObject = _G[planet]
                 if planetObject then
@@ -114,7 +125,7 @@ function createAuxiliaryButtons()
             end
         end)
 
-        local btnOrbit = createAuxiliaryButton("pencil.png", x, y, initX + 30, initY, function(event)
+        local btnOrbit = createAuxiliaryButton(planet,"pencil.png", x, y, initX + 30, initY, function(event)
             local orbitP = orbits[planet]
             if event.phase == "ended" then
                 if orbitP then
@@ -123,7 +134,7 @@ function createAuxiliaryButtons()
             end
         end)
 
-        local btnMoon = createAuxiliaryButton("Luna.png", x, y, initX + 60, initY, function(event)
+        local btnMoon = createAuxiliaryButton(planet,"Luna.png", x, y, initX + 60, initY, function(event)
             if event.phase == "ended" then
                 local btn = event.target
                 btn.pressed = not btn.pressed
