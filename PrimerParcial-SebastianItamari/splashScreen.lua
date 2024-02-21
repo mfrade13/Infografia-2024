@@ -1,11 +1,20 @@
 --LIBRERIAS
 local composer = require( "composer" )
+local audio = require("audio")
  
 local scene = composer.newScene()
 
 --RECURSOS
-local recursosTexto = "Fuentes/"
-local recursosImagenes = "Imagenes/"
+recursosTexto = "Fuentes/"
+recursosImagenes = "Imagenes/"
+recursosAudio = "Audios/"
+
+--SONIDOS GLOBALES
+sonidoClick = audio.loadSound(recursosAudio.."click.wav")
+sonidoCometa = audio.loadSound(recursosAudio.."cometa.mp3")
+--SONIDOS LOCALES
+local sonidoFondo = audio.loadStream(recursosAudio.."fondo.mp3")
+--sonidoExplosion = audio.loadSound(recursosAudio.."explosion.mp3")
 
 --DIMENSIONES GENERALES DE LA PANTALLA DEL DISPOSITIVO
 CW = display.contentWidth
@@ -14,6 +23,8 @@ CH = display.contentHeight
 
 local fondo, icono, mensajeCarga, titulo, boton, textoBoton
 local indiceCarga = 0
+
+
 
 local options = {
     effect = "slideLeft",
@@ -37,6 +48,7 @@ end
 function cargar(self,event)
     if event.phase == "began" then
         self:setFillColor(0.24)
+        audio.play(sonidoClick)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
         textoBoton.isVisible = false
@@ -73,8 +85,6 @@ function scene:create( event )
     boton.strokeWidth = 2
     boton:setFillColor(0.44)
     boton:setStrokeColor(1)
-    boton.touch = cargar
-    boton: addEventListener('touch',boton)
     textoBoton = display.newText(sceneGroup, "INICIAR", boton.x, boton.y, recursosTexto.."Opcion2.ttf", 32)
     textoBoton:setFillColor(1)
     
@@ -98,7 +108,9 @@ function scene:show( event )
         textoBoton.isVisible = true
         boton.isVisible = true
     elseif ( phase == "did" ) then
-        
+        audio.play(sonidoFondo, { loops = -1 }) 
+        boton.touch = cargar
+        boton: addEventListener('touch',boton)   
     end
 end
 
@@ -107,7 +119,7 @@ function scene:hide( event )
     local sceneGroup = self.view
     local phase = event.phase
     if ( phase == "will" ) then
-
+        boton: removeEventListener('touch',boton)
     elseif ( phase == "did" ) then
         
     end

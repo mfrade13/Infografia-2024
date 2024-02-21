@@ -1,12 +1,13 @@
 --LIBRERIAS
 local composer = require( "composer" )
 local widget = require("widget")
+local audio = require("audio")
  
 local scene = composer.newScene()
 
 --RECURSOS
-local recursosTexto = "Fuentes/"
-local recursosImagenes = "Imagenes/"
+--local recursosTexto = "Fuentes/"
+--local recursosImagenes = "Imagenes/"
 
 --COLORES ORBITAS
 local color_blanco = {1,1,1}
@@ -17,8 +18,8 @@ local animacion = false
 local cometaAnimacion = true
 
 --DIMENSIONES GENERALES DE LA PANTALLA DEL DISPOSITIVO
-local CW = display.contentWidth
-local CH = display.contentHeight
+--local CW = display.contentWidth
+--local CH = display.contentHeight
 
 --FONDO DE LA ANIMACIÓN
 local fondo
@@ -72,6 +73,7 @@ end
 
 function salir(self,event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -83,20 +85,22 @@ end
 --REFACCIONAR
 function tocar(self, event )
 	if event.phase == "began" then
+        audio.play(sonidoClick)
 		self:setFillColor( 0.24 )
 	elseif event.phase == "ended" then
         local elemento --GRUPO DE CUERPOS ACORDE A UN PLANETA (EL PLANETA EN SI Y SUS LUNAS)
         local cuerpo --PLANETA O LUNA (ELEMENTO) DEL GRUPO DE CUERPOS
         if animacion == false then
+            --audio.play(sonidoExplosion)
             grupoBotones[1][2].text = "Detener"
             for i = 2, grupoAstros.numChildren  do
                 elemento = grupoAstros[i][2]
                 for j = 1, elemento.numChildren do
                     cuerpo = grupoAstros[i][2][j]
                     if i == grupoAstros.numChildren and j == elemento.numChildren then
-                        transition.to(cuerpo, {time = 650, x = cuerpo.posx, y = cuerpo.posy, onComplete=function() Runtime:addEventListener("enterFrame", animar) end})
+                        transition.to(cuerpo, {time = 700, x = cuerpo.posx, y = cuerpo.posy, onComplete=function() Runtime:addEventListener("enterFrame", animar) end})
                     else
-                        transition.to(cuerpo, {time = 650, x = cuerpo.posx, y = cuerpo.posy})
+                        transition.to(cuerpo, {time = 700, x = cuerpo.posx, y = cuerpo.posy})
                     end
                 end
             end       
@@ -104,9 +108,9 @@ function tocar(self, event )
             explosion:setFillColor(1)
             local explosion1 = display.newCircle(grupoEfectos,centroXFondo, centroYFondo, 10)
             explosion1:setFillColor(1); explosion1.xScale = 70; explosion1.yScale = 70; explosion1.alpha = 0
-            transition.to(explosion, {time = 600, xScale = 70, yScale = 70, alpha = 0, onComplete = function() explosion:removeSelf() end})
-            transition.to(explosion1, {time = 500, xScale = 1, yScale = 1, alpha = 0.7, onComplete = function() explosion1:removeSelf() end})
-            transition.to(grupoAstros,{time = 650, alpha = 1})
+            transition.to(explosion, {time = 700, xScale = 70, yScale = 70, alpha = 0, onComplete = function() explosion:removeSelf() end})
+            transition.to(explosion1, {time = 600, xScale = 1, yScale = 1, alpha = 0.7, onComplete = function() explosion1:removeSelf() end})
+            transition.to(grupoAstros,{time = 700, alpha = 1})
             animacion = true
         else
             cometaAnimacion = false
@@ -303,6 +307,7 @@ end
 
 function tocarBotonPlaneta(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -315,6 +320,7 @@ end
 
 function ocultar(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -330,6 +336,7 @@ end
 
 function aumentarVelTraslacion(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -346,6 +353,7 @@ end
 
 function disminuirVelTraslacion(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -362,6 +370,7 @@ end
 
 function aumentarVelRotacion(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -378,6 +387,7 @@ end
 
 function disminuirVelRotacion(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
@@ -401,10 +411,12 @@ end
 --REFACCIONAR
 function cometa(self, event)
     if event.phase == "began" then
+        audio.play(sonidoClick)
         self:setFillColor(0.24)
     elseif event.phase == "ended" then
         self:setFillColor(0.44)
         if cometaAnimacion and animacion then
+            audio.play(sonidoCometa)
             local sentido = math.random(0, 1)
             local cometa = display.newImageRect(grupoEfectos, recursosImagenes.."cometa.png", 100, 50)
             cometa.x = math.random(0, centroXFondo * 2)
@@ -439,7 +451,7 @@ function cometa(self, event)
                 grupoEfectos:insert(1, cometaTraslapo)  -- Insertar el cometa traslapo al inicio del grupo para que aparezca detrás
                 transition.to(cometaTraslapo, {y = destinoY, x = destinoX, time = duracionTraslapo, delay = intervaloTraslapo * (i - 1) + duracionPrincipal - duracionTraslapo, onComplete = function() cometaTraslapo:removeSelf() end})
             end
-        else
+        else 
             desplegarMensaje(grupoEfectos,"Inicia la animación para mostrar los cometas")
         end
     end
@@ -474,8 +486,6 @@ function scene:create( event )
 
     local texto = display.newText(grupoFondoBotones,"Botones", fondoBotones.x, fondoBotones.y/6, recursosTexto.."Opcion2.ttf", 25)
     texto:setFillColor(1)
-
-   
 
     local sol = display.newImageRect( grupoAstros,recursosImagenes.."sol.png", 83,83 )
     sol.x = centroXFondo; sol.y = centroYFondo
