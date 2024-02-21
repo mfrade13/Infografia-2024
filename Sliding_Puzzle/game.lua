@@ -2,40 +2,36 @@ local composer = require( "composer" )
  
 local scene = composer.newScene()
 
+-- Variables
+
 local startTime
 local isRunning = false
-
 local elapsedTime = 0 
-
 local movements = 0
 local gridSize
 local tileSize
 local gapSize = 5
 local woodBoxPositionX, woodBoxPositionY
-
 local puzzleMatrix = {}
 local initialPuzzleState = {}  
 local emptyRow, emptyCol
-
 local numberText
+local timeText, movementsText
+local startButton, startText
+local image
+local puzzleInitialX = 150 
+local puzzleInitialY = 190 
+local woodBox, background
+local level
+local imageName = "tucan"
+
+-- Groups
 
 local puzzleGroup, interfaceGroup, backgroundGroup
 
-local timeText, movementsText
+-- Functions
 
-local startButton, startText
-
-local image
-
-local puzzleInitialX = 150 
-local puzzleInitialY = 190 
-
-local woodBox, background
-
-local level
-
-
-local function go_to_scoreboard()
+local function goToScoreboard()
     local options = 
     {
         effect = "fade",
@@ -53,7 +49,7 @@ local function assignValuesLevel(level)
         gridSize = 3
         tileSize = 150
         woodBoxPositionX = puzzleInitialX + (gridSize - 1) * (tileSize + gapSize) - 75
-        woodBoxPositionY = puzzleInitialY + (gridSize - 1) * (tileSize + gapSize) -80 
+        woodBoxPositionY = puzzleInitialY + (gridSize - 1) * (tileSize + gapSize) - 80 
     elseif (level == 2) then  
         gridSize = 4
         tileSize = 112.5
@@ -107,11 +103,11 @@ local function checkVictory()
     return true
 end
 
-function clearPuzzle()
+local function clearPuzzle()
     display.remove(puzzleGroup)
 end
 
-function clearDisplay()
+local function clearDisplay()
     display.remove(interfaceGroup)
     display.remove(backgroundGroup)
 end
@@ -123,7 +119,7 @@ local function completePuzzle()
         puzzleMatrix[gridSize][gridSize] = number
         local x = puzzleInitialX + (gridSize - 1) * (tileSize + gapSize) + tileSize/2
         local y = puzzleInitialY + (gridSize - 1) * (tileSize + gapSize) + tileSize/2
-        local tile = display.newImageRect(puzzleGroup, resourcesPath .. "tucan" .. level .. "/tucan" .. number .. ".jpg", tileSize, tileSize)
+        local tile = display.newImageRect(puzzleGroup, resourcesPath .. imageName .. level .. "/" .. imageName .. number .. ".jpg", tileSize, tileSize)
         tile.x = x; tile.y = y
         numberText = display.newText(puzzleGroup, tostring(number), x + tileSize - 10 - tileSize/2, y + tileSize - 10 - tileSize/2, native.systemFont, 24)
         numberText:setTextColor(1, 1, 1)
@@ -140,7 +136,7 @@ local function completePuzzle()
                 numberText.isVisible = true
                 timer.performWithDelay(2000, function()
                     clearPuzzle()
-                    go_to_scoreboard()
+                    goToScoreboard()
                 end)
             end
         })
@@ -217,8 +213,6 @@ local function tileTouched(event)
                 stopTimer()
                 completePuzzle()
             end
-        else
-            print("Invalid move")
         end
     end
     return true
@@ -232,15 +226,13 @@ local function drawPuzzle()
             local y = puzzleInitialY + (i - 1) * (tileSize + gapSize)
 
             if tileValue ~= "empty" then
-                local tile = display.newImageRect(puzzleGroup, resourcesPath .. "tucan" .. level .. "/tucan" .. tileValue .. ".jpg", tileSize, tileSize)
+                local tile = display.newImageRect(puzzleGroup, resourcesPath .. imageName .. level .. "/" .. imageName .. tileValue .. ".jpg", tileSize, tileSize)
                 tile.x = x; tile.y = y
                 tile.anchorX, tile.anchorY = 0, 0
 
-                tile.numberText = display.newText(tostring(tileValue), x + tileSize - 10, y + tileSize - 10, native.systemFont, 24)
+                tile.numberText = display.newText(puzzleGroup, tostring(tileValue), x + tileSize - 10, y + tileSize - 10, native.systemFont, 24)
 
                 tile:addEventListener("touch", tileTouched)
-                puzzleGroup:insert(tile)
-                puzzleGroup:insert(tile.numberText)
             end
         end
     end
@@ -345,7 +337,7 @@ function scene:create( event )
     movementsText:setFillColor(1, 1, 1)
     movementsText.anchorX = 0; movementsText.anchorY = 0
 
-    image = display.newImageRect(interfaceGroup, resourcesPath .. "tucan.jpg", 200, 200)
+    image = display.newImageRect(interfaceGroup, resourcesPath .. imageName .. ".jpg", 200, 200)
     image.x = puzzleInitialX + 600; image.y = puzzleInitialY - 50 
     image.anchorX = 0; image.anchorY = 0
 
@@ -397,6 +389,8 @@ function scene:hide( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
+        clearDisplay()
+        composer.removeScene("game")
  
     end
 end
@@ -406,9 +400,8 @@ end
 function scene:destroy( event )
  
     local sceneGroup = self.view
+    -- Code here runs prior to the removal of scene's view
 
-    clearPuzzle()
-    clearDisplay()
 end
  
  

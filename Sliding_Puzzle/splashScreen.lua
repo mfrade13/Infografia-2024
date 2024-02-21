@@ -1,14 +1,15 @@
 local composer = require( "composer" )
- 
+
 local scene = composer.newScene()
 
-CW = display.contentWidth
-CH = display.contentHeight
-resourcesPath = "resources/"
+-- Variables
 
-local background, icon
+local background, icon, overlay
+local slidingText, puzzleText
 
-function go_to_menu(event)
+-- Functions
+
+function goToMenu(event)
     local options = 
     {
         effect = "slideLeft",
@@ -30,7 +31,7 @@ function scene:create( event )
     background = display.newImageRect(resourcesPath .. "background.jpg", CW, CH)
     background.x = CW/2; background.y = CH/2
 
-    local overlay = display.newRect(CW/2, CH/2, CW, CH)
+    overlay = display.newRect(CW/2, CH/2, CW, CH)
     overlay:setFillColor(0, 0, 0) 
     overlay.alpha = 0.6
 
@@ -78,7 +79,7 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        transition.to(icon, {time=1000, onComplete=go_to_menu})
+        transition.to(icon, {time=1000, onComplete=goToMenu})
     end
 end
  
@@ -94,6 +95,7 @@ function scene:hide( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
+        composer.removeScene("splashScreen")
  
     end
 end

@@ -1,16 +1,20 @@
 local composer = require( "composer" )
- 
+
 local scene = composer.newScene()
 
-local background
+-- Variables
 
+local background, overlay
 local buttons = {}
-
 local levelTexts = {}
+
+-- Groups
 
 local backgroundGroup
 
-function go_to_game(event)
+-- Functions
+
+function goToGame(event)
     if event.phase == "ended" then 
         local buttonNumber = event.target.number
         local options = 
@@ -31,7 +35,7 @@ function createButtons()
         buttons[i] = display.newImageRect(backgroundGroup, resourcesPath .. "startButton.png", 320, 120)
         buttons[i].x = CW/2; buttons[i].y = CH/4 + ((i-1)*180)
         buttons[i].number = i
-        buttons[i]:addEventListener("touch", go_to_game)
+        buttons[i]:addEventListener("touch", goToGame)
 
         levelTexts[i] = display.newText({
             parent = backgroundGroup,
@@ -60,7 +64,7 @@ function scene:create( event )
     background = display.newImageRect(backgroundGroup, resourcesPath .. "background.jpg", CW, CH)
     background.x = CW/2; background.y = CH/2
 
-    local overlay = display.newRect(backgroundGroup, CW/2, CH/2, CW, CH)
+    overlay = display.newRect(backgroundGroup, CW/2, CH/2, CW, CH)
     overlay:setFillColor(0, 0, 0) 
     overlay.alpha = 0.6
 
@@ -95,6 +99,7 @@ function scene:hide( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
+        composer.removeScene("menu")
  
     end
 end

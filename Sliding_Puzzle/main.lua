@@ -4,6 +4,9 @@
 --
 -----------------------------------------------------------------------------------------
 
-local composer = require "composer"
+CW = display.contentWidth
+CH = display.contentHeight
+resourcesPath = "resources/"
 
+local composer = require "composer"
 composer.gotoScene( "splashScreen")
