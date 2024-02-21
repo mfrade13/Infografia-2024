@@ -158,16 +158,15 @@ end
 function showPlanetsButtons()
     for i = 1, planetsButtonGroup.numChildren do
         local btn = planetsButtonGroup[i]
-        transition.to(btn, {x = btn.initX, y = btn.initY, time = 2000})
         btn.isVisible = true
+        transition.to(btn, {x = btn.initX, y = btn.initY, time = 2000, onComplete = toggleAuxiliaryButtonsVisibility(false)})
     end
-    toggleAuxiliaryButtonsVisibility(false)
 end
 
 function movePlanetsButtonsToCenter()
     for i = 1, planetsButtonGroup.numChildren do
         local btn = planetsButtonGroup[i]
-        transition.to(btn, {x = play.x, y = play.y, time = 2000})
+        transition.to(btn, {x = play.x, y = play.y+70, time = 2000})
     end
     timer.performWithDelay(2000, function()
         for i = 1, planetsButtonGroup.numChildren do
@@ -177,6 +176,7 @@ function movePlanetsButtonsToCenter()
 end
 
 function toggleAuxiliaryButtonsVisibility(visible)
+        print("Changing moonVisibility to " .. tostring(visible))
     for _, planet in ipairs(planets) do
         local planetButtonSet = planetsAuxButtons[planet]
         for _, auxBtn in ipairs(planetButtonSet) do
@@ -187,11 +187,11 @@ end
 
 function pressPlay()
     if not isPlaying then
-        toggleAuxiliaryButtonsVisibility(false)
         Runtime:addEventListener("enterFrame", rotate)
         bigBang()
         isPlaying = true 
         showPlanetsButtons()
+        toggleAuxiliaryButtonsVisibility(false)
     end
 end
 
