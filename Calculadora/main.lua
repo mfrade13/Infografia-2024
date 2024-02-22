@@ -72,7 +72,10 @@ end
 
 -- Operators function
 function operation( event )
-	if event.target.value == "sin" or  event.target.value == "cos" or event.target.value == "tan" then
+	if textbox.text == "Syntax Error" then
+		calculate = event.target.value
+		textbox.text = event.target.value
+	elseif event.target.value == "sin" or  event.target.value == "cos" or event.target.value == "tan" then
 		calculate = calculate .. " math." .. event.target.value .."("
 		textbox.text = textbox.text .. " " .. event.target.value .. "("
 	elseif event.target.value == "ln" then
@@ -136,6 +139,7 @@ function Calculate( event )
 		calculate = textbox.text
 	else
 		textbox.text = "Syntax Error"
+		calculate = ""
 	end
 end
 
