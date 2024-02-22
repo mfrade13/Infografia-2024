@@ -3,7 +3,7 @@ local composer = require( "composer" )
 local scene = composer.newScene()
  
 
- local bckg
+ local bckg, stats, game, btn_close, finalscore
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -32,19 +32,16 @@ function scene:create( event )
  
     local sceneGroup = self.view
     -- Code here runs when the scene is first created but has not yet appeared on screen
-    bckg = display.newImageRect(sceneGroup,  res_folder .. "IFmenu.png", CW, CH)
-    bckg.anchorX = 0; bckg.anchorY=0
 
-    btn_play = display.newImageRect(sceneGroup, res_folder.."IFplay.jpg", 200, 50)
-    btn_play.x = CW*(4/5); btn_play.y = CH*(3.8/5)
+    btn_close = display.newText(sceneGroup,"X", CW*24/25, CH*2/23, "arial bold",30)
 
-    btn_instructions= display.newImageRect(sceneGroup, res_folder.."instructions.png", 200, 50)
-    btn_instructions.x = CW*(4/5); btn_instructions.y = CH*(4.2/5)
+    bckg = display.newImageRect(sceneGroup,  res_folder .. "IFgameOver.png", (250)*1.6, (173)*1.6)
+    bckg.x = display.contentCenterX; bckg.y=display.contentCenterY
 
-    logo = display.newImageRect(sceneGroup, res_folder.."IceFishingLogo.png", 288*(0.8), 184*(0.8))
-    logo.x = CW*(1.3/5); logo.y = CH*(4/5)
+    game=display.newText(sceneGroup,"GAME OVER", CW/2, CH/5, "arial bold",90)
     
- 
+    stats=display.newText(sceneGroup,"Fishes: "..event.params.finalscore, CW/2, CH*4/5, "arial bold",50)
+   
 end
  
  
@@ -59,8 +56,8 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        btn_play:addEventListener("touch", goto_game)
-        btn_instructions:addEventListener("touch", open_instructions)
+        btn_close:addEventListener("touch", go_back)
+        
     end
 end
  
@@ -73,7 +70,7 @@ function scene:hide( event )
  
     if ( phase == "will" ) then
         -- Code here runs when the scene is on screen (but is about to go off screen)
- 
+        composer.removeScene("end")
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
  

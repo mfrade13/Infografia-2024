@@ -13,15 +13,15 @@ physics.setGravity( 0, 0 )
  
  local lives = 3
  local score_value = 0
- local grupoFondo, grupoPersonajes, grupoControles, grupoInterfaz
+ local grupoFondo, grupoPersonajes, grupoControles, grupoInterfaz, jellyFishGroup
  local hooked=false
  local enemies=false
  local won=false
  local level=0
  local hasworm = true
  
+ local finalscore
  local bckg, hielo, pingu, gusano, bucket, btn_up, btn_down, btn_close, hook, line
- local jellyFishGroup=display.newGroup()
  local life
  local direction
  local delay 
@@ -162,6 +162,7 @@ function moving()
         line:setStrokeColor(0,0,0)
         line.strokeWidth = 2
         line:toBack()
+        hielo:toFront()
         stopMoving()
     elseif hook.y < CH*(1/5) then
         print("not allowed")
@@ -171,6 +172,7 @@ function moving()
         line:setStrokeColor(0,0,0)
         line.strokeWidth = 2
         line:toBack()
+        hielo:toFront()
         stopMoving()
     else
         hook.y=hook.y + direction
@@ -179,6 +181,7 @@ function moving()
         line:setStrokeColor(0,0,0)
         line.strokeWidth = 2
         line:toBack()
+        hielo:toFront()
         if hooked ==true and hook.y < CH*(1/5)+7 then
             hooked = false
             hook.fill={type="image", filename= res_folder .. "hook2.png"}
@@ -231,6 +234,7 @@ function electrocuted()
     newline_elect.anchorY=0
     newline_elect.height = hook.y - (CH/9)
     newline_elect:play()
+    hielo:toFront()
     hook.fill={type="image", filename= res_folder .. "hook1.png"}
         hook.width=15
         hook.height=35
@@ -308,8 +312,10 @@ function gameOver()
         {
             effect = "fade",
             time = 1000,
-            score_value=score_value*4,
-            won=won
+            params = {
+                finalscore=score_value,
+                lives=lives
+            }
         }
         composer.gotoScene( "end" , options )
 end
@@ -318,8 +324,8 @@ function go_back(e)
     if e.phase == "ended" then
         local options =
         {
-            effect = "fade",
-            time = 800
+            effect = "fromTop",
+            time = 1000
         }
         composer.gotoScene("menu", options)
     end
@@ -330,12 +336,17 @@ function go_back(e)
 function scene:create( event )
  
     local sceneGroup = self.view
+    display.remove( sceneGroup )
+
+
     grupoFondo = display.newGroup( )
     sceneGroup:insert(grupoFondo)
     grupoPersonajes = display.newGroup( )
     sceneGroup:insert(grupoPersonajes)
     grupoInterfaz = display.newGroup()
     sceneGroup:insert( grupoInterfaz)
+    jellyFishGroup = display.newGroup()
+    sceneGroup:insert( jellyFishGroup)
     -- Code here runs when the scene is first created but has not yet appeared on screen
     bckg = display.newImageRect(grupoFondo,  res_folder .. "IFbackground.png", CW, CH)
     bckg.x = CW/2; bckg.y= CH/2
@@ -420,10 +431,9 @@ function scene:hide( event )
  
     if ( phase == "will" ) then
         -- Code here runs when the scene is on screen (but is about to go off screen)
- 
+        composer.removeScene("juego")
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
- 
     end
 end
  
