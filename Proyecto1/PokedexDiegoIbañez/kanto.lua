@@ -8,7 +8,7 @@ local CW, CH = display.contentWidth, display.contentHeight
 local carpeta_recursos = "resources/"
 
 local botonSound = audio.loadSound(carpeta_recursos .. "SoundA.mp3")
-local descripcionText
+local descripcionText , NumeroText
 local fondo, titulo, botonVolver, PokedexImg
 local inputID, btnBuscar
 local pokemonID = 0  
@@ -50,6 +50,7 @@ function scene:create(event)
     })
     descripcionText:setFillColor(0, 0, 0)
 
+
     
     previousBtn = display.newText("<", CW * 0.35, CH * 0.79, native.systemFont, 40)
     previousBtn:setFillColor(0, 0, 0)
@@ -72,6 +73,7 @@ function scene:create(event)
         end
         cargarPokemon(pokemonID)
     end)
+    
 
     inputID = native.newTextField(display.contentCenterX, 120, 200, 40)
     inputID.placeholder = "ID del Pokémon"
@@ -81,6 +83,18 @@ function scene:create(event)
     local txtBuscar = display.newText("Buscar", 250, 170, native.systemFont, 20)
     txtBuscar:setFillColor(1, 1, 1)
     btnBuscar:addEventListener("tap", buscarPokemon)
+
+    NumeroText = display.newText({
+        text = "",
+        x = CW * 0.28,
+        y = CH * 0.25,
+        width = CW * 0.4,
+        height = CH * 0.1,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    })
+    NumeroText:setFillColor(0, 0, 0)
 
     sceneGroup:insert(fondo)
     sceneGroup:insert(titulo)
@@ -92,6 +106,7 @@ function scene:create(event)
     sceneGroup:insert(inputID)
     sceneGroup:insert(btnBuscar)
     sceneGroup:insert(txtBuscar)
+    sceneGroup:insert(NumeroText)
 end
 
 function buscarPokemon()
@@ -122,6 +137,7 @@ function cargarPokemon(id)
                     PokedexImg:removeSelf()
                     PokedexImg = nil
                 end
+                NumeroText.text = id
                 PokedexImg = event.target
                 PokedexImg.x = CW * 0.25
                 PokedexImg.y = CH * 0.5
@@ -156,35 +172,12 @@ function cargarPokemon(id)
 end
 
 
-function scene:show(event)
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if (phase == "will") then
-
-    elseif (phase == "did") then
-
-    end
-end
-
-function scene:hide(event)
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if (phase == "will") then
-
-    elseif (phase == "did") then
-
-    end
-end
 
 function scene:destroy(event)
     local sceneGroup = self.view
 end
 
 scene:addEventListener("create", scene)
-scene:addEventListener("show", scene)
-scene:addEventListener("hide", scene)
 scene:addEventListener("destroy", scene)
 
 return scene

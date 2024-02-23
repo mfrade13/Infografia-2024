@@ -7,7 +7,7 @@ local scene = composer.newScene()
 local CW, CH = display.contentWidth, display.contentHeight
 local carpeta_recursos = "resources/"
 
-local descripcionText
+local descripcionText, NumeroText
 local botonSound = audio.loadSound(carpeta_recursos .. "SoundA.mp3")
 local fondo, titulo, botonVolver, PokedexUnovaArriba, PokedexUnovaAbajo, PokedexImg
 local inputID, btnBuscar
@@ -110,6 +110,18 @@ function scene:create(event)
     pantalla.alpha = 0.01  
     pantalla:addEventListener("touch", deslizarImagen)
 
+    NumeroText = display.newText({
+        text = "",
+        x = CW * 0.45,
+        y = CH * 0.3,
+        width = CW * 0.4,
+        height = CH * 0.1,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    })
+    NumeroText:setFillColor(0, 0, 0)
+
     sceneGroup:insert(fondo)
     sceneGroup:insert(titulo)
     sceneGroup:insert(botonVolver)
@@ -122,6 +134,7 @@ function scene:create(event)
     sceneGroup:insert(btnBuscar)
     sceneGroup:insert(txtBuscar)
     sceneGroup:insert(descripcionText)
+    sceneGroup:insert(NumeroText)
 end
 
 function buscarPokemon()
@@ -153,7 +166,7 @@ function cargarPokemon(id)
                     PokedexImg:removeSelf()
                     PokedexImg = nil
                 end
-                
+                NumeroText.text = id
                 PokedexImg = event.target
                 PokedexImg.x = CW * 0.50
                 PokedexImg.y = CH * 0.26
@@ -188,35 +201,12 @@ function cargarPokemon(id)
     )
 end
 
-function scene:show(event)
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if (phase == "will") then
-
-    elseif (phase == "did") then
-
-    end
-end
-
-function scene:hide(event)
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if (phase == "will") then
-
-    elseif (phase == "did") then
-
-    end
-end
 
 function scene:destroy(event)
     local sceneGroup = self.view
 end
 
 scene:addEventListener("create", scene)
-scene:addEventListener("show", scene)
-scene:addEventListener("hide", scene)
 scene:addEventListener("destroy", scene)
 
 return scene
