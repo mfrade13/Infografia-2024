@@ -79,7 +79,7 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        local efec = math.round((totalDisparos - totalFalladas)/totalFalladas * 1000) / 1000
+        local efec = (totalDisparos - totalFalladas)/totalFalladas * 100
         local titles = display.newText("EFECTIVIDAD PARA " .. totalDisparos .. " DISPAROS: \n" .. efec .. "%", display.contentCenterX, display.contentCenterY *1.7, font, 40)
         sceneGroup:insert(titles)
         transition.from(titles, {time = 1500, x = -display.contentWidth, transition = easing.outExpo})
