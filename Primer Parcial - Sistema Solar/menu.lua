@@ -2,13 +2,17 @@ local composer = require( "composer" )
  
 local scene = composer.newScene()
 
-local CW = display.contentWidth
-local CH = display.contentHeight
+CW = display.contentWidth
+CH = display.contentHeight
+
+newFontSource = "PressStart2P-Regular.ttf"
 
 local Xo = CW/2 + 40
 local Yo = CH/2
 
-local stars = {}
+stars = {}
+
+local buttonStar, textButton, title
  
 function create_star()
     local star = display.newRect(math.random(0 ,CW + 100), math.random(0,CH + 100),2,2)
@@ -56,23 +60,21 @@ function scene:create( event )
  
     local sceneGroup = self.view
 
-    for i=1,400 do
+    for i=1,800 do
         stars[i] = create_star()
     end
 
-    local button = display.newRoundedRect(sceneGroup, CW/2, CH/2, 200, 100, 10 )
-    button:setFillColor(0, 0, 0, 0.1)
-    button.strokeWidth = 4
-    button:setStrokeColor(1, 1, 1) 
+    title = display.newText(sceneGroup, "Solar System", CW/2, CH/3, newFontSource, 65)
 
-    local textButton = display.newText(sceneGroup, "START", CW/2, CH/2, "Arial", 36)
+    buttonStart = display.newRoundedRect(sceneGroup, CW/2, CH/3*2, 300, 100, 10 )
+    buttonStart:setFillColor(0, 0, 0, 0.1)
+    buttonStart.strokeWidth = 4
+    buttonStart:setStrokeColor(1, 1, 1) 
+
+    textButton = display.newText(sceneGroup, "START", CW/2, CH/3*2, newFontSource, 45)
     textButton:setFillColor(1, 1, 1) 
 
-    button:addEventListener( "touch", goto_simulador )
-
-    sceneGroup:insert(button)
-
-    Runtime:addEventListener( "enterFrame", move_background)
+    sceneGroup:insert(buttonStart)
 end
  
  
@@ -87,6 +89,9 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
+
+        buttonStart:addEventListener( "touch", goto_simulador )
+        Runtime:addEventListener( "enterFrame", move_background)
  
     end
 end
