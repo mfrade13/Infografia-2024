@@ -1,5 +1,7 @@
 local composer = require( "composer" )
 local player = require('player')
+local targetPlayers = {}
+local targetPositions = {}
 local rectCreator = require( "Utilities.rectangles" )
 
 local scene = composer.newScene()
@@ -26,6 +28,7 @@ local function ir_targets()
             weaponSelection = weaponSelection
         }
     }
+    
     composer.gotoScene("targets", opciones)
 end
 
@@ -34,7 +37,11 @@ function createTargets (sceneGroup)
     for i = 1, targets do
         local offsetY = math.random(CH*0.2)
         local offsetX = math.random(CW*0.3)
-        local newTgt = rectCreator.createRectImage(sceneGroup, carpeta_recursos .. "Idle.png", 82*1.8, 72*1.8, centerX * 1.2 + offsetX, centerY * 1.5 +  offsetY)
+        targetPositions[i] = { x = centerX * 1.2 + offsetX, y = centerY * 1.4 +  offsetY }
+        local weapon = math.random(3)
+        local newTgt = player.initop1(weapon)
+        sceneGroup:insert(newTgt.animation)
+        targetPlayers[i] = newTgt
     end
 end
 
@@ -73,7 +80,10 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        shooter.renderGameSequence()
+        shooter:renderGameSequence()
+        for i = 1, targets do
+            targetPlayers[i]:renderTargetSequence(targetPositions[i].x,targetPositions[i].y)
+        end
         nextPerspectiveBTN:addEventListener("tap", ir_targets)
     end
 end

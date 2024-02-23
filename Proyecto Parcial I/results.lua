@@ -1,5 +1,5 @@
 local composer = require( "composer" )
- 
+local rectCreator = require( "Utilities.rectangles" )
 local scene = composer.newScene()
 
 local barrasInfo
@@ -14,7 +14,7 @@ local returnBTN
 -- -----------------------------------------------------------------------------------
  
 local function crearBarras(sceneGroup)
-    local espacioBordes = CW*0.05
+
     local espacio = (CW - CW*0.05*2) / 5
     local posX = CW*0.05
     for i = 1, 6 do
@@ -32,7 +32,7 @@ local function crearBarras(sceneGroup)
         posX = posX + espacio
     end
 end
- 
+
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------

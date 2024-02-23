@@ -1,4 +1,5 @@
 local shooter = {}
+shooter.__index = shooter
 
 local config1 = {
     width1 = 128,
@@ -16,9 +17,15 @@ local config1 = {
     numFrames3 = 4,
     sheetContentWidth3 = 512,
     sheetContentHeight3 = 128,
+    width4 = 128,
+    height4 = 128,
+    numFrames4 = 4,
+    sheetContentWidth4 = 512,
+    sheetContentHeight4 = 128,
     time1 =400,
     time2 = 400,
-    time3 = 200
+    time3 = 200,
+    time4 = 1000
 }
 
 local config2 = {
@@ -37,9 +44,15 @@ local config2 = {
     numFrames3 = 4,
     sheetContentWidth3 = 512,
     sheetContentHeight3 = 128,
+    width4 = 128,
+    height4 = 128,
+    numFrames4 = 4,
+    sheetContentWidth4 = 512,
+    sheetContentHeight4 = 128,
     time1 =400,
     time2 = 400,
-    time3 = 300
+    time3 = 300,
+    time4 = 1000
 }
 
 local config3 = {
@@ -58,9 +71,15 @@ local config3 = {
     numFrames3 = 4,
     sheetContentWidth3 = 512,
     sheetContentHeight3 = 128,
+    width4 = 128,
+    height4 = 128,
+    numFrames4 = 5,
+    sheetContentWidth4 = 640,
+    sheetContentHeight4 = 128,
     time1 = 600,
     time2 = 500,
-    time3 = 800
+    time3 = 800,
+    time4 = 1300
 }
 
 local config = {config1, config2, config3}
@@ -91,6 +110,7 @@ end
 
 function shooter.initop1 (operator)
     
+    local sht = setmetatable({}, shooter)
     local sheetData1 = {
         width = config[operator].width1,
         height = config[operator].height1,
@@ -121,6 +141,16 @@ function shooter.initop1 (operator)
 
     local sheet3 = graphics.newImageSheet('Sprites/Soldier_'..operator..'/Shot_1.png', sheetData3)
 
+    local sheetData4 = {
+        width = config[operator].width4,
+        height = config[operator].height4,
+        numFrames = config[operator].numFrames4,
+        sheetContentWidth = config[operator].sheetContentWidth4,
+        sheetContentHeight = config[operator].sheetContentHeight4
+    }
+
+    local sheet4 = graphics.newImageSheet('Sprites/Soldier_'..operator..'/Dead.png', sheetData4)
+
     local sequenceData = {
         {
             name = 'op1Running',
@@ -145,45 +175,87 @@ function shooter.initop1 (operator)
             count = 4,
             time = config[operator].time3,
             loopDirection = 'forward'
+        },
+        {
+            name = 'op1Dead',
+            sheet = sheet4,
+            start = 1,
+            count = 7,
+            time = config[operator].time4,
+            loopCount = 1,
+            loopDirection = 'forward'
         }
-        }
-    shooter.animation = display.newSprite( sheet1, sequenceData )
+    }
+    sht.animation = display.newSprite( sheet1, sequenceData )
     
-    return shooter
+    return sht
 end
 
-local function shoot()
+function shooter:shoot()
 
-    shooter.animation:setSequence( "op1Shoot" )
-    shooter.animation:play()
+    self.animation:setSequence( "op1Shoot" )
+    self.animation:play()
 
     timer.performWithDelay(5000, function()
-        shooter.animation:setSequence( "op1Idle" )
-        shooter.animation:play()
+        self.animation:setSequence( "op1Idle" )
+        self.animation:play()
     end)
 end
 
-local function idle()
+function shooter:idle()
 
-    shooter.animation:setSequence( "op1Idle" )
-    shooter.animation:play()
+    self.animation:setSequence( "op1Idle" )
+    self.animation:play()
 
-    timer.performWithDelay(4000, shoot())
+    timer.performWithDelay(3000, function() self:shoot() end)
 
 end
 
-function shooter.renderGameSequence()
+function shooter:renderGameSequence()
 
-    shooter.animation.x = 0
-    shooter.animation.y = display.contentCenterY * 1.8
-    shooter.animation:scale(2, 2)
-    shooter.animation:play()
+    self.animation.x = 0
+    self.animation.y = display.contentCenterY * 1.8
+    self.animation:scale(2, 2)
+    self.animation:setSequence("op1Running")
+    self.animation:play()
 
-    local T1 = transition.to(shooter.animation, {
+    local T1 = transition.to(self.animation, {
         x = display.contentCenterX * 0.5,
         y = display.contentCenterY * 1.5,
         time = 2000,
-        onComplete = idle
+        onComplete = function() self:idle() end
+    })
+
+end
+
+function shooter:Tidle()
+    self.animation:setSequence("op1Idle")
+    self.animation:play()
+
+    local randomNumber = math.random(2)
+    local randomValue = 0.8 + math.random() * 0.8
+    if randomNumber == 1 then
+        -- Probabilidad del 33%
+        timer.performWithDelay(4000*randomValue, function() 
+            self.animation:setSequence("op1Dead")
+            self.animation:play()
+        end)
+    end
+end
+function shooter:renderTargetSequence(finalX, finalY)
+
+    self.animation.x = CW*1.3
+    self.animation.y = display.contentCenterY * 1.8
+    self.animation.xScale = -1
+    self.animation:scale(2, 2)
+    self.animation:setSequence("op1Running")
+    self.animation:play()
+
+    local T1 = transition.to(self.animation, {
+        x = finalX,
+        y = finalY,
+        time = 2500,
+        onComplete = function() self:Tidle() end
     })
 
 end

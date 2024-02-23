@@ -4,17 +4,7 @@ local scene = composer.newScene()
 local introLogo
 
 function ir_menu()
-    local options =
-    {
-        time = 500,
-        params = {
-            nivel = 1,
-            tiempo = 60,
-            cantidad_enemigos = 5
-
-        }
-    }
-    composer.gotoScene( "menu", options )
+    composer.gotoScene( "menu" )
 end
 
 -- create()

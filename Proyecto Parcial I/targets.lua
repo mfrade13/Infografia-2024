@@ -30,6 +30,7 @@ local shots = {}
 local valoresAleatorios
 local countHitsTerminado = false
 local fondo
+local countedShots = 1
 -- Resultados
 local totalHitsCabeza = 0
 local totalHitsTorsoSuperior = 0
@@ -343,8 +344,9 @@ local function checkRectHits(x, y, table)
     return false
 end
 
-local function countHits ()
+local function countHits (callback)
     for i, shot in ipairs(shots) do
+        countedShots = countedShots + 1
         local centroX = shot.x
         local centroY = shot.y
 
@@ -382,13 +384,13 @@ local function countHits ()
 
             totalHitsExtremidadesInferiores = totalHitsExtremidadesInferiores + 1
         end
-
     end
-    countHitsTerminado = true
 end
 
+
+
 local function mostrarResultados()
-    if (countHitsTerminado) then
+    if (countedShots >= #shots) then
         local opciones = {
             effect = "slideLeft",
             time = 500,
@@ -486,7 +488,7 @@ function scene:show( event )
                
         insertCircleWithDelay(1)
 
-        countHits()
+        countHits(finishCount)
 
         resultsBTN:addEventListener("tap", mostrarResultados)
         -- Code here runs when the scene is entirely on screen
