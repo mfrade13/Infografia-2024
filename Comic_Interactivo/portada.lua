@@ -8,6 +8,13 @@ local scene = composer.newScene()
 -- -----------------------------------------------------------------------------------
  local fondo
  
+ function irPagina(e)
+    if e.phase == "ended" then 
+        composer.gotoScene("pagina1", 
+        {time=1000, effect = "slideLeft"})
+    end
+    return true
+end
  
  
 -- -----------------------------------------------------------------------------------
@@ -38,9 +45,7 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        fondo:addEventListener("touch", function()
-            composer.gotoScene("pagina1", {time = 1000, effect= "slideLeft"})
-        end)
+        fondo:addEventListener("touch", irPagina)
     end
 end
  
@@ -53,7 +58,7 @@ function scene:hide( event )
  
     if ( phase == "will" ) then
         -- Code here runs when the scene is on screen (but is about to go off screen)
-        fondo:removeEventListener("touch", fondo)
+        fondo:removeEventListener("touch", irPagina)
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
  
