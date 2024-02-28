@@ -3,12 +3,19 @@
 -- main.lua
 --
 -----------------------------------------------------------------------------------------
+local physics = require("physics")
 
 -- Your code here
 local CW = display.contentWidth
 local CH = display.contentHeight
 
 local path = "resources/"
+physics.start( )
+physics.setDrawMode( "hybrid" )
+
+print(physics.getGravity())
+physics.setGravity( -0.3, 9.8 )
+
 
 local fondo = display.newRect(CW/2, CH/2, CW, CH)
 fondo:setFillColor(0.22)
@@ -17,13 +24,13 @@ local options = {
     width = 300,
     height = 300,
     numFrames = 8
-
 }
 local options_attack = {
     width = 533,
     height = 300,
     numFrames = 6
 }
+
 
 local image_sheet = graphics.newImageSheet(path.."avanza_derecha.png", options)
 local image_sheet_izquierda = graphics.newImageSheet(path.."avanza_izquierda.png", options)
@@ -63,15 +70,35 @@ local secuencia = {
 
 }
 
+local cuerpo_box_cazador = { halfWidth=55, halfHeight=100, x=0, y=0, angle=0 }
+
+
 local cazador = display.newSprite(image_sheet_acciones_d, secuencia)
 cazador.x = CW/2; cazador.y = CH/2
+cazador.nombre = "cazador"
 print(cazador.xScale, cazador.yScale)
 cazador.xScale =1
+--physics.addBody( cazador, "kinematic", {box=cuerpo_box_cazador} )
+print(cazador.bodyType)
+physics.addBody(cazador, "dynamic", {radius = 85})
+
+local piso = display.newRect(CW/2, CH-150, CW, 30)
+piso:setFillColor( 0,1,0, 0.4 )
+piso.nombre = "piso"
+physics.addBody(piso, "static")
+
+local ball = display.newCircle(CW/3,CH/4, 50)
+ball:setFillColor( 0,0,1 )
+ball.nombre = "ball"
+
+physics.addBody(ball, "dynamic", {radius=50})
+ball.gravityScale = 0.25
 
 cazador:setSequence("reposo_derecha")
 cazador:play()
 direccion = "derecha"
 local xTarget
+
 function mover(e)
     if e.phase == "began" then
         print("Empieza a avanzar")
@@ -102,15 +129,37 @@ function mover(e)
     return true
 end
 
+function cazador_collision(self, event)
+    if event.phase == "began" then
+
+    elseif event.phase == "ended" then
+        print(event.target.nombre .. " ha colisionado contra: " .. event.other.nombre)
+        if event.other.nombre == "ball" then
+            display.remove(event.other)
+            print("Sumar puntos")
+        end
+    end
+end
+
+cazador.collision = cazador_collision
+cazador:addEventListener( "collision", cazador )
+
+
 local boton_avanzar_derecha = display.newRect(CW-100, CH-100, 100, 70)
 boton_avanzar_derecha:addEventListener("touch", mover)
 
 
 local boton_frames = display.newRect(CW/2, boton_avanzar_derecha.y, 100,70)
 boton_frames:addEventListener("touch", function()
-    cazador:setSequence("avanza_derecha")
-    cazador:setFrame(math.random(1,8))
-    cazador:pause()
+    cazador:setSequence("atacar")
+    cazador:play()
+    cazador.bodyType = "dynamic"
+    timer.performWithDelay( 1200, function()
+        cazador:setSequence( "reposo_derecha" )
+        cazador:play( )
+        end, 1)
+    -- cazador:setFrame(math.random(1,8))
+    -- cazador:pause()
 end)
 
 
