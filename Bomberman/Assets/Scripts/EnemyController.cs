@@ -12,6 +12,7 @@ public class EnemyController : MonoBehaviour
   private Vector3 currentDirection;
   private Tilemap tilemap;
   private Animator animator;
+  private CapsuleCollider2D capsule;
   private float moveInterval = 3f;
   private float moveSpeed = 2f;
   private bool isDead = false;
@@ -23,6 +24,7 @@ public class EnemyController : MonoBehaviour
       animator = GetComponent<Animator>();
       player = FindObjectOfType<BombermanCollider>();
       tilemap = FindObjectOfType<Tilemap>();
+      capsule = GetComponent<CapsuleCollider2D>();
       moveDirections = new List<Vector3>();
       moveDirections.Add( new Vector3(1f, 0));
       moveDirections.Add(new Vector3(-1f, 0));
@@ -42,7 +44,7 @@ public class EnemyController : MonoBehaviour
 
   private void OnCollisionEnter2D(Collision2D collision)
   {
-      if (collision.gameObject == player.gameObject)
+      if (collision.gameObject == player.gameObject && !isDead)
       {
         player.die();
       }
@@ -73,6 +75,7 @@ public class EnemyController : MonoBehaviour
 
   public void die()
   {
+    capsule.enabled = false;
     this.isDead = true;
     animator.SetTrigger("hasDied");
     SceneController.instance.killEnemy();

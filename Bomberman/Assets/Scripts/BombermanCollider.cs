@@ -9,6 +9,7 @@ public class BombermanCollider : MonoBehaviour
 {
   public float moveSpeed = 2f;
   private bool isDead = false;
+  private CapsuleCollider2D capsuleCollider;
   Transform bomberman_t;
   Animator animator;
   Rigidbody2D bomberman_rgb;
@@ -20,6 +21,7 @@ public class BombermanCollider : MonoBehaviour
         bomberman_t = GetComponent<Transform>();
         animator = GetComponent<Animator>();
         bomberman_rgb = bomberman_t.GetComponent<Rigidbody2D>();
+        capsuleCollider = bomberman_t.GetComponent<CapsuleCollider2D>();
     }
 
     void Update()
@@ -29,7 +31,7 @@ public class BombermanCollider : MonoBehaviour
         float horizontalMovement = Input.GetAxisRaw("Horizontal");
         float verticalMovement = Input.GetAxisRaw("Vertical");
         moveDirection = new Vector3(horizontalMovement, verticalMovement).normalized;
-        this.playMovementAnimation(horizontalMovement, verticalMovement);
+        this.PlayMovementAnimation(horizontalMovement, verticalMovement);
       }
     }
 
@@ -41,7 +43,7 @@ public class BombermanCollider : MonoBehaviour
     }
     }
 
-  private void playMovementAnimation(float moveX, float moveY)
+  private void PlayMovementAnimation(float moveX, float moveY)
   {
     animator.SetFloat("speed_sideways",Mathf.Abs(moveX));
 
@@ -72,6 +74,7 @@ public class BombermanCollider : MonoBehaviour
 
   public void die()
   {
+    capsuleCollider.enabled = false;
     animator.SetTrigger("hasDied");
     animator.SetBool("isDead", true);
     this.isDead = true;
@@ -84,6 +87,7 @@ public class BombermanCollider : MonoBehaviour
     Destroy(gameObject);
     SceneController.instance.NextScene();
   }
+
   public Vector3Int getCurrentCell()
   {
    return tilemap.WorldToCell(transform.position);
@@ -97,7 +101,13 @@ public class BombermanCollider : MonoBehaviour
     }
     else if (collision.CompareTag("door") && SceneController.instance.getEnemiesLeft() == 0)
     {
-      SceneController.instance.LoadScene("Win");
+      animator.SetTrigger("hasWon");
+      Invoke("Win", 2f);
     }
+  }
+
+  private void Win()
+  {
+    SceneController.instance.LoadScene("Win");
   }
 }
