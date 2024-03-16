@@ -7,7 +7,6 @@ face_classifier = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_classifier = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 camara = cv2.VideoCapture(0)
-texto_color = "COLOR"
 while True:
     _, frame = camara.read()
     # Read the image
@@ -33,7 +32,7 @@ while True:
         face_color = frame[y:y+h, x:x+w]
         eyes = eye_classifier.detectMultiScale(face_gray, 1.2, 3)
         for (ex,ey,ew,eh) in eyes:
-            cv2.rectangle(face_color,(ex,ey),(ex+ew,ey+eh),(255,255,0),2)
+            cv2.rectangle(face_color,(ex,ey),(ex+ew,ey+eh),(255,155,0),2)
 
 
     cv2.imshow("Faces found", frame)
