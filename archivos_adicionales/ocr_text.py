@@ -2,11 +2,11 @@ import cv2
 import pytesseract
  
 # Winsows requiere de la ruta donde esta el ejecutable de tesseract
-# pytesseract.pytesseract.tesseract_cmd = 'System_path_to_tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = 'C://users/documentos/tesseract.exe'
  
 # Imagen para procesar
 # img = cv2.imread("sample4.jpg")
-img = cv2.imread("captcha_test.jpg")
+img = cv2.imread("sample4.jpg")
 
  
 # Convertir la imagen a gris para su procesamiento
@@ -20,7 +20,7 @@ ret, thresh1 = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_I
 # of the rectangle to be detected.
 # A smaller value like (10, 10) will detect 
 # each word instead of a sentence.
-rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (18, 18))
+rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (10, 10))
  
 # Aplicar la dilatacion a la imagen en base al rango
 dilation = cv2.dilate(thresh1, rect_kernel, iterations = 1)
@@ -41,7 +41,7 @@ for cnt in contours:
     x, y, w, h = cv2.boundingRect(cnt)
  
     # Dibujar cuadrados a la imagen 
-    rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (255, 255, 0), 4)
 
     # Recortar la imagen para procesar
     cropped = im2[y:y + h, x:x + w]
